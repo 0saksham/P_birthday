@@ -17,7 +17,7 @@ An interactive, responsive, animated birthday surprise web application crafted b
    - Floating interactive balloons that pop on click/tap with sound and reveal hidden affirmation words (*shine, dream, laugh, superstar...*).
 
 3. **Scene 2: The Portrait Reveal**
-   - Polaroid developing effect showing the authentic photo of Saksham and Pihu at Graphic Era Hill University (Navsrijan Ideathon).
+   - Polaroid developing effect showing the authentic photo of Saksham and Pihu at Graphic Era Hill University.
    - Orbiting stars, flowers, and hearts.
    - Interactive 3D tilt responding to mouse coordinates or device orientation.
    - Easter egg: tapping the photo 5 times triggers a winking heart burst!
@@ -27,14 +27,18 @@ An interactive, responsive, animated birthday surprise web application crafted b
    - Tapping each star plays a celestial chime, launches a shooting star animation, and opens a glass modal revealing a personalized blessing.
    - Live counter (`X/12`); when all 12 are found, a constellation lines overlay forms the letter **'P'** and a heart.
 
-5. **Scene 4: Heartfelt Letter from Saksham**
-   - Personal letter on warm parchment with progressive paragraph reveal and highlighted memory tokens (`{{memory_1}}`, `{{memory_2}}`, `{{inside_joke}}`).
+5. **Scene 4: Heartfelt Letter from Older Brother Saksham**
+   - Personal letter on warm parchment reflecting connecting back in college (2nd year & 1st year), always having each other's back, and standing by each other as an older brother.
    - SVG cursive signature drawing itself dynamically (*"— Saksham"*).
 
-6. **Scene 5: The Blessings Garden**
-   - Lush garden with night/day shift and hovering fireflies.
-   - Tapping the soil plants and blooms animated flowers carrying blessings on their petals.
-   - Reward confetti & butterfly release when all blessings are grown.
+6. **Scene 4.5: Animated Birthday Mascot**
+   - Interactive animated birthday mascot character with party hat, blinking eyes, waving arms, and speech bubble wishing *"Happy Birthday Pihu!"*.
+   - Web Speech API aloud birthday greeting, interactive dance button, and floating balloon cheer.
+
+7. **Scene 5: The Enchanted Blessings Garden**
+   - Fairytale twilight garden with hanging fairy lights, fireflies, and 8 botanical flower mounds.
+   - Sprouting green stems with dual leaves blooming into radiant flowers (Cherry Blossom, Golden Sunflower, Tulip, Rose, Lotus, Daisy, Hibiscus, Bouquet).
+   - Dedicated glass blessing cards for each flower, magical watering can (*Bloom All*), and grand butterfly & rainbow celebration!
 
 7. **Scene 6: Memory Lane & Mini-Game**
    - 3D flip cards highlighting traits (*Her Energy, Her Focus, Her Kindness, Chai Partner, Quick Wit, True Potential*).
@@ -90,9 +94,9 @@ const CONFIG = {
 
   // Memories & inside jokes inserted into the letter:
   memories: {
-    memory_1: "the Navsrijan Ideathon days at Graphic Era...",
-    memory_2: "how you always ask the most insightful questions...",
-    inside_joke: "the endless post-event chai debates on who worked harder"
+    memory_1: "when we first connected in college (2nd year & 1st year)...",
+    memory_2: "how you always bring thoughtful support and honesty...",
+    inside_joke: "our endless college discussions and chai breaks"
   },
   ...
 };

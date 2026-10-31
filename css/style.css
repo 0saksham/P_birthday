@@ -1225,48 +1225,275 @@ html, body {
    ========================================================================== */
 .scene-garden {
   width: 100%;
-  max-width: 680px;
+  max-width: 720px;
   text-align: center;
   position: relative;
 }
 
-.garden-stage {
-  width: 100%;
-  height: 380px;
-  position: relative;
-  background: linear-gradient(180deg, rgba(27, 16, 53, 0.6) 0%, rgba(58, 28, 92, 0.7) 60%, #1e3b2e 100%);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--glass-border);
-  overflow: hidden;
-  cursor: pointer;
-  margin: 16px 0;
-  box-shadow: inset 0 -40px 60px rgba(14, 52, 33, 0.6);
+/* Garden Action Toolbar */
+.garden-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 12px 0 16px;
 }
 
-.garden-soil-line {
+.garden-tool-btn {
+  padding: 8px 18px;
+  font-size: 0.88rem;
+  border-radius: var(--radius-full);
+}
+
+.garden-stage {
+  width: 100%;
+  min-height: 430px;
+  position: relative;
+  background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 45%, #064e3b 85%, #022c22 100%);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(110, 231, 183, 0.3);
+  overflow: hidden;
+  cursor: pointer;
+  margin: 12px 0 20px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4), inset 0 0 80px rgba(16, 185, 129, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Fairy Lights Garland */
+.fairy-lights-garland {
   position: absolute;
-  bottom: 0;
+  top: 10px;
   left: 0;
   right: 0;
-  height: 48px;
-  background: linear-gradient(0deg, #173224, #27523c);
-  border-top: 2px solid #529471;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 20px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.fairy-lights-garland::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 10px;
+  right: 10px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50% / 10px;
+}
+
+.fl-bulb {
+  width: 10px;
+  height: 14px;
+  border-radius: 50% 50% 40% 40%;
+  background: #ffeb3b;
+  box-shadow: 0 0 12px #ffeb3b, 0 0 24px #ffd166;
+  animation: bulbGlow 2.5s ease-in-out infinite alternate;
+}
+
+.fl-bulb:nth-child(2n) {
+  background: #ff7eb6;
+  box-shadow: 0 0 12px #ff7eb6, 0 0 24px #ff477e;
+  animation-delay: 0.6s;
+}
+
+.fl-bulb:nth-child(3n) {
+  background: #6ee7b7;
+  box-shadow: 0 0 12px #6ee7b7, 0 0 24px #34d399;
+  animation-delay: 1.2s;
+}
+
+@keyframes bulbGlow {
+  0% { opacity: 0.6; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1.2); }
 }
 
 .garden-hint {
   position: absolute;
-  top: 18px;
+  top: 36px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--accent-mint);
-  background: rgba(0,0,0,0.4);
-  padding: 6px 16px;
+  background: rgba(6, 78, 59, 0.7);
+  backdrop-filter: blur(8px);
+  padding: 6px 18px;
   border-radius: var(--radius-full);
+  border: 1px solid rgba(110, 231, 183, 0.4);
   pointer-events: none;
+  z-index: 6;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
 }
 
-.bloomed-flower {
+/* 8 Botanical Garden Plots Grid */
+.garden-plots-container {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 16px 10px;
+  padding: 70px 16px 50px;
+  flex: 1;
+  align-items: center;
+}
+
+@media (max-width: 580px) {
+  .garden-plots-container {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    padding: 65px 12px 50px;
+    gap: 14px 8px;
+  }
+}
+
+.garden-plot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 120px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+.garden-plot:hover {
+  transform: translateY(-4px);
+}
+
+/* Plot Mound & Soil */
+.plot-mound {
+  width: 72px;
+  height: 24px;
+  background: radial-gradient(ellipse at center, #2e5939 0%, #193822 65%, #0f2415 100%);
+  border-radius: 50%;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.5), inset 0 2px 6px rgba(110,231,183,0.3);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.plot-pebbles {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 0.55rem;
+  opacity: 0.7;
+}
+
+/* Unbloomed Seed State */
+.plot-seedling {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  animation: seedPulse 2.2s ease-in-out infinite alternate;
+}
+
+.seed-icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 0 10px rgba(110, 231, 183, 0.7));
+}
+
+.seed-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #a7f3d0;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px dashed rgba(110, 231, 183, 0.5);
+}
+
+@keyframes seedPulse {
+  0% { transform: scale(0.92); opacity: 0.8; }
+  100% { transform: scale(1.08); opacity: 1; }
+}
+
+/* Bloomed Flower in Plot */
+.plot-bloomed-flower {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: plotBloomIn 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes plotBloomIn {
+  0% { transform: scale(0) translateY(40px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.flower-tag-pill {
+  background: rgba(255, 255, 255, 0.95);
+  color: #064e3b;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  animation: tagFloat 2.6s ease-in-out infinite alternate;
+}
+
+@keyframes tagFloat {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+.flower-petals-wrap {
+  position: relative;
+  font-size: 2.4rem;
+  filter: drop-shadow(0 4px 14px rgba(0,0,0,0.45));
+  animation: swayPetals 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes swayPetals {
+  0% { transform: rotate(-6deg) scale(1); }
+  100% { transform: rotate(6deg) scale(1.04); }
+}
+
+.flower-stem-lush {
+  width: 5px;
+  height: 38px;
+  background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+  border-radius: 3px;
+  position: relative;
+  margin-top: -6px;
+}
+
+.stem-leaf-left, .stem-leaf-right {
+  position: absolute;
+  width: 14px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 12px 0 12px 0;
+  top: 14px;
+}
+
+.stem-leaf-left {
+  left: -12px;
+  transform: rotate(-30deg);
+}
+
+.stem-leaf-right {
+  right: -12px;
+  transform: scaleX(-1) rotate(-30deg);
+}
+
+/* Wild Flower Sprout (when clicking free soil) */
+.bloomed-wild-flower {
   position: absolute;
   transform: translate(-50%, -100%) scale(0);
   animation: flowerGrow 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
@@ -1275,52 +1502,74 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  z-index: 5;
 }
 
 @keyframes flowerGrow {
-  0% { transform: translate(-50%, 0) scale(0); }
-  60% { transform: translate(-50%, -100%) scale(1.15); }
-  100% { transform: translate(-50%, -100%) scale(1); }
+  0% { transform: translate(-50%, 0) scale(0); opacity: 0; }
+  60% { transform: translate(-50%, -100%) scale(1.2); opacity: 1; }
+  100% { transform: translate(-50%, -100%) scale(1); opacity: 1; }
 }
 
-.flower-stem {
-  width: 4px;
-  height: 55px;
-  background: #4ade80;
-  border-radius: 2px;
-}
-
-.flower-head {
-  font-size: 2.2rem;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
-  animation: swayFlower 3s ease-in-out infinite alternate;
-}
-
-@keyframes swayFlower {
-  0% { transform: rotate(-5deg); }
-  100% { transform: rotate(5deg); }
-}
-
-.flower-petal-toast {
+/* Soil Line & Blades */
+.garden-soil-line {
   position: absolute;
-  bottom: 80px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #1e293b;
-  font-weight: 500;
-  font-size: 0.85rem;
-  padding: 8px 14px;
-  border-radius: var(--radius-md);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  white-space: nowrap;
-  pointer-events: none;
-  animation: floatToast 2.5s ease-out forwards;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  background: linear-gradient(0deg, #022c22 0%, #064e3b 70%, #047857 100%);
+  border-top: 3px solid #34d399;
+  z-index: 3;
 }
 
-@keyframes floatToast {
-  0% { opacity: 0; transform: translateY(10px); }
-  20% { opacity: 1; transform: translateY(0); }
-  80% { opacity: 1; transform: translateY(-10px); }
-  100% { opacity: 0; transform: translateY(-25px); }
+.soil-grass-blades {
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 6px, #10b981 6px, #10b981 9px, transparent 9px, transparent 15px);
+  opacity: 0.7;
+}
+
+/* Fluttering Butterflies */
+.fluttering-butterfly {
+  position: absolute;
+  font-size: 1.8rem;
+  z-index: 8;
+  pointer-events: none;
+  animation: butterflyFlight 8s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+}
+
+@keyframes butterflyFlight {
+  0% { transform: translate(-20px, 120px) rotate(15deg); opacity: 0; }
+  10% { opacity: 1; }
+  50% { transform: translate(320px, -40px) rotate(-15deg); }
+  90% { opacity: 1; }
+  100% { transform: translate(680px, 80px) rotate(20deg); opacity: 0; }
+}
+
+/* Garden Rainbow Arch */
+.garden-rainbow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 120%, transparent 55%, rgba(255, 107, 107, 0.2) 60%, rgba(255, 216, 107, 0.25) 65%, rgba(110, 231, 183, 0.3) 70%, rgba(96, 165, 250, 0.25) 75%, transparent 80%);
+  pointer-events: none;
+  z-index: 2;
+  animation: rainbowFadeIn 2s ease-out forwards;
+}
+
+@keyframes rainbowFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Garden Modal Inner */
+.garden-modal-inner {
+  border-color: rgba(110, 231, 183, 0.7);
+  box-shadow: 0 0 40px rgba(16, 185, 129, 0.4), 0 12px 40px rgba(0, 0, 0, 0.7);
 }
 
 /* Fireflies */
@@ -1832,87 +2081,432 @@ html, body {
 }
 
 /* C-4: Voice Note Scene */
-.scene-voice-note {
+/* C-4: Animated Birthday Mascot Scene */
+.scene-mascot-wish {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 20px;
-  max-width: 420px;
+  gap: 16px;
+  max-width: 520px;
   width: 100%;
+  position: relative;
 }
 
-.voice-note-heading {
-  font-family: var(--font-script);
-  font-size: clamp(1.8rem, 5vw, 2.6rem);
+.mascot-scene-heading {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 5vw, 2.4rem);
   color: var(--accent-gold);
   text-shadow: 0 4px 18px rgba(255,216,107,0.4);
+  margin-bottom: 2px;
 }
 
-.voice-note-status {
+.mascot-scene-subtitle {
   font-size: 0.95rem;
   color: var(--accent-peach);
-  min-height: 1.4em;
+  margin-bottom: 8px;
 }
 
-.vinyl-record {
-  width: 180px;
+.mascot-stage {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  min-height: 330px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 12px;
+}
+
+/* Speech Bubble */
+.mascot-speech-bubble {
+  position: relative;
+  background: rgba(255, 255, 255, 0.96);
+  color: #1f1b2e;
+  border-radius: 20px;
+  padding: 16px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.45;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), 0 0 20px rgba(255, 216, 107, 0.5);
+  border: 2px solid rgba(255, 216, 107, 0.8);
+  margin-bottom: 24px;
+  max-width: 90%;
+  animation: bubblePop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.3s ease;
+}
+
+.speech-quote {
+  color: var(--accent-rose);
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.speech-bubble-tail {
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 13px solid rgba(255, 255, 255, 0.96);
+}
+
+@keyframes bubblePop {
+  0% { transform: scale(0.6) translateY(20px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* Mascot Body & Anatomy */
+.birthday-mascot {
+  position: relative;
+  width: 150px;
   height: 180px;
+  cursor: pointer;
+  animation: mascotFloat 3.2s ease-in-out infinite alternate;
+  transition: transform 0.3s ease;
+  user-select: none;
+}
+
+.birthday-mascot:hover {
+  transform: scale(1.05);
+}
+
+.birthday-mascot.speaking {
+  animation: mascotTalkBounce 0.4s ease-in-out infinite alternate;
+}
+
+.birthday-mascot.dancing {
+  animation: mascotDanceMove 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes mascotFloat {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-10px); }
+}
+
+@keyframes mascotTalkBounce {
+  0% { transform: translateY(0) scale(1, 1); }
+  100% { transform: translateY(-14px) scale(1.03, 0.97); }
+}
+
+@keyframes mascotDanceMove {
+  0% { transform: rotate(-10deg) translateY(-8px); }
+  100% { transform: rotate(10deg) translateY(-2px); }
+}
+
+/* Party Hat */
+.mascot-party-hat {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%) rotate(8deg);
+  z-index: 5;
+}
+
+.hat-pompom {
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: radial-gradient(circle at center,
-    #1a1a2e 0%, #2d1b4e 25%, #1b1035 30%, #3a1c5c 45%,
-    #1b1035 50%, #2d1b4e 60%, #1a1a2e 100%);
-  box-shadow: 0 0 30px rgba(255,126,182,0.4), 0 8px 32px rgba(0,0,0,0.6);
+  background: #ffe066;
+  box-shadow: 0 0 10px #ffe066;
+  margin: 0 auto -4px;
+  animation: pompomWiggle 1.5s ease-in-out infinite alternate;
+}
+
+.hat-cone {
+  width: 0;
+  height: 0;
+  border-left: 18px solid transparent;
+  border-right: 18px solid transparent;
+  border-bottom: 34px solid #ff477e;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+  position: relative;
+}
+
+.hat-cone::after {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 14px;
+  width: 24px;
+  height: 4px;
+  background: #ffd166;
+  border-radius: 2px;
+}
+
+@keyframes pompomWiggle {
+  0% { transform: scale(0.9); }
+  100% { transform: scale(1.15); }
+}
+
+/* Head */
+.mascot-head {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 100px;
+  background: linear-gradient(145deg, #ffd8a8 0%, #ffc078 100%);
+  border-radius: 50% 50% 45% 45%;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25), inset 0 2px 8px rgba(255,255,255,0.4);
+  z-index: 3;
+}
+
+/* Ears */
+.mascot-ear {
+  position: absolute;
+  top: -12px;
+  width: 32px;
+  height: 38px;
+  background: #ffa94d;
+  border-radius: 50% 50% 30% 30%;
+  z-index: 1;
+}
+
+.mascot-ear.ear-left {
+  left: 4px;
+  transform: rotate(-22deg);
+}
+
+.mascot-ear.ear-right {
+  right: 4px;
+  transform: rotate(22deg);
+}
+
+.ear-inner {
+  position: absolute;
+  inset: 5px;
+  background: #ff8787;
+  border-radius: 50%;
+}
+
+/* Eyes */
+.mascot-eyes {
+  position: absolute;
+  top: 36px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 24px;
+}
+
+.mascot-eye {
+  width: 14px;
+  height: 18px;
+  background: #2b2b2b;
+  border-radius: 50%;
+  position: relative;
+  animation: mascotEyeBlink 4s infinite;
+}
+
+.eye-pupil {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 6px;
+  height: 6px;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+.eye-sparkle {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 3px;
+  height: 3px;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+@keyframes mascotEyeBlink {
+  0%, 94%, 98%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.08); }
+}
+
+/* Blush */
+.mascot-blush {
+  position: absolute;
+  top: 52px;
+  width: 18px;
+  height: 10px;
+  background: rgba(255, 107, 107, 0.6);
+  border-radius: 50%;
+  filter: blur(1px);
+}
+
+.mascot-blush.blush-left { left: 14px; }
+.mascot-blush.blush-right { right: 14px; }
+
+/* Nose */
+.mascot-nose {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 8px;
+  background: #d9480f;
+  border-radius: 50% 50% 60% 60%;
+}
+
+/* Animated Mouth */
+.mascot-mouth {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 8px;
+  border-bottom: 3px solid #7c2d12;
+  border-radius: 0 0 12px 12px;
+  transition: all 0.2s ease;
+}
+
+.mascot-mouth.talking {
+  height: 16px;
+  background: #e03131;
+  border-radius: 0 0 16px 16px;
+  border-bottom: none;
+  animation: mouthOpenClose 0.22s ease-in-out infinite alternate;
+}
+
+@keyframes mouthOpenClose {
+  0% { height: 6px; width: 14px; }
+  100% { height: 18px; width: 18px; }
+}
+
+/* Body */
+.mascot-body {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 96px;
+  height: 80px;
+  background: linear-gradient(145deg, #ffa94d 0%, #f76707 100%);
+  border-radius: 40px 40px 30px 30px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  position: relative;
-  border: 3px solid rgba(255,255,255,0.1);
 }
 
-.vinyl-record::before {
-  content: '';
-  position: absolute;
-  inset: 20%;
+.mascot-belly {
+  width: 58px;
+  height: 52px;
+  background: #ffe8cc;
   border-radius: 50%;
-  border: 2px solid rgba(255,216,107,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.vinyl-record::after {
-  content: '';
+.mascot-badge {
+  font-size: 1.4rem;
+}
+
+/* Arms */
+.mascot-arm {
   position: absolute;
-  inset: 38%;
-  border-radius: 50%;
-  background: var(--accent-rose);
-  box-shadow: 0 0 10px var(--accent-rose);
+  top: 14px;
+  z-index: 4;
 }
 
-.vinyl-center {
-  font-size: 1.8rem;
-  color: white;
-  z-index: 2;
-  position: relative;
+.mascot-arm.arm-left {
+  left: -16px;
+  animation: armWave 1.8s ease-in-out infinite alternate;
+  transform-origin: top right;
+}
+
+.mascot-arm.arm-right {
+  right: -16px;
+  animation: armBob 2.2s ease-in-out infinite alternate;
+  transform-origin: top left;
+}
+
+.arm-paw {
+  font-size: 1.7rem;
+  display: block;
+}
+
+@keyframes armWave {
+  0% { transform: rotate(-10deg); }
+  50% { transform: rotate(25deg); }
+  100% { transform: rotate(-15deg); }
+}
+
+@keyframes armBob {
+  0% { transform: rotate(5deg) translateY(0); }
+  100% { transform: rotate(-8deg) translateY(-6px); }
+}
+
+/* Floating Balloons */
+.mascot-balloons {
+  position: absolute;
+  right: -32px;
+  top: -40px;
+  display: flex;
+  gap: 4px;
   pointer-events: none;
 }
 
-.vinyl-record:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 50px rgba(255,126,182,0.6), 0 8px 40px rgba(0,0,0,0.7);
+.mascot-balloon {
+  width: 22px;
+  height: 28px;
+  border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+  box-shadow: inset -2px -2px 6px rgba(0,0,0,0.25);
+  animation: miniBalloonFloat 2.4s ease-in-out infinite alternate;
 }
 
-.vinyl-record:active {
-  transform: scale(0.97);
+.mascot-balloon.b-pink { background: #ff6b8b; animation-delay: 0s; }
+.mascot-balloon.b-gold { background: #ffd166; animation-delay: 0.5s; }
+.mascot-balloon.b-cyan { background: #4ecdc4; animation-delay: 1s; }
+
+@keyframes miniBalloonFloat {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-12px); }
 }
 
-.vinyl-record.spinning {
-  animation: vinylSpin 3s linear infinite;
+/* Shadow */
+.mascot-shadow {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 14px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 50%;
+  filter: blur(4px);
+  animation: shadowScale 3.2s ease-in-out infinite alternate;
 }
 
-@keyframes vinylSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes shadowScale {
+  0% { transform: translateX(-50%) scale(1); opacity: 0.4; }
+  100% { transform: translateX(-50%) scale(0.85); opacity: 0.2; }
+}
+
+/* Mascot Actions */
+.mascot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.mascot-action-btn {
+  padding: 10px 18px;
+  font-size: 0.92rem;
+  border-radius: var(--radius-full);
 }
 
 /* C-5: Photo Wall */

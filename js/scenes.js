@@ -459,7 +459,7 @@ function initScene4() {
 
 /**
  * ============================================================================
- * SCENE 4.5: VOICE NOTE (Part C-4)
+ * SCENE 4.5: ANIMATED BIRTHDAY MASCOT (Replaces Voice Note)
  * ============================================================================
  */
 let scene45Initialized = false;
@@ -468,60 +468,151 @@ function initScene45() {
   if (scene45Initialized) return;
   scene45Initialized = true;
 
-  const voiceRecord = document.getElementById("voice-record-vinyl");
-  const voiceAudio = document.getElementById("voice-note-audio");
-  const voiceStatus = document.getElementById("voice-note-status");
-  const voiceSkip = document.getElementById("voice-skip-btn");
+  const mascot = document.getElementById("birthday-mascot");
+  const mascotMouth = document.getElementById("mascot-mouth");
+  const speechText = document.getElementById("mascot-speech-text");
+  const speakBtn = document.getElementById("mascot-speak-btn");
+  const danceBtn = document.getElementById("mascot-dance-btn");
+  const cheerBtn = document.getElementById("mascot-cheer-btn");
+  const stage = document.getElementById("mascot-stage");
 
-  if (!voiceAudio) return;
+  const MASCOT_WISHES = [
+    "Happy Birthday Pihu! Wishing you the happiest and most wonderful year ahead! 🎉💖",
+    "Big brother Saksham sent me to deliver the warmest birthday wish! You're a superstar, Pihu! ⭐",
+    "May your year be filled with big smiles, lots of laughter, great chai, and endless wins! 🎂✨",
+    "Always stay confident and cheerful! Remember your big brother Saksham always has your back! 🎈🌸"
+  ];
 
-  // Check if voice.mp3 exists
-  const testAudio = new Audio("assets/audio/voice.mp3");
-  testAudio.onerror = () => {
-    // File missing — skip this scene
-    if (voiceStatus) voiceStatus.textContent = "No voice note yet — come back soon! 🎙️";
-    if (voiceRecord) voiceRecord.style.opacity = "0.4";
-    return;
-  };
-  testAudio.oncanplaythrough = () => {
-    if (voiceStatus) voiceStatus.textContent = "Tap the record to play a voice note from Saksham 🎙️";
-    voiceAudio.src = "assets/audio/voice.mp3";
+  let currentWishIdx = 0;
+  let isSpeaking = false;
 
-    if (voiceRecord) {
-      let playing = false;
-      voiceRecord.addEventListener("click", () => {
-        if (playing) {
-          voiceAudio.pause();
-          voiceRecord.classList.remove("spinning");
-          playing = false;
-          if (voiceStatus) voiceStatus.textContent = "Paused — tap to resume 🎙️";
-        } else {
-          voiceAudio.play().catch(() => {});
-          voiceRecord.classList.add("spinning");
-          playing = true;
-          if (voiceStatus) voiceStatus.textContent = "Playing... 🎵";
-        }
-      });
+  function speakMascotWish() {
+    if (isSpeaking) return;
+    isSpeaking = true;
 
-      voiceAudio.addEventListener("ended", () => {
-        voiceRecord.classList.remove("spinning");
-        playing = false;
-        if (voiceStatus) voiceStatus.textContent = "Hope you enjoyed that ✨";
+    // Cycle wish text in bubble
+    const wish = MASCOT_WISHES[currentWishIdx % MASCOT_WISHES.length];
+    currentWishIdx++;
+    if (speechText) speechText.textContent = wish;
+
+    // Sound effect
+    if (window.sound && typeof sound.playCelebration === "function") {
+      sound.playSparkle();
+    }
+
+    // Mascot animations
+    if (mascot) mascot.classList.add("speaking");
+    if (mascotMouth) mascotMouth.classList.add("talking");
+
+    // Confetti burst
+    if (typeof confetti === "function") {
+      confetti({
+        particleCount: 35,
+        spread: 60,
+        origin: { y: 0.6 }
       });
     }
-  };
 
-  if (voiceSkip) {
-    voiceSkip.addEventListener("click", () => {
-      if (voiceAudio) voiceAudio.pause();
-      if (window.nav) window.nav.nextScene();
+    // Browser Web Speech API to say Happy Birthday aloud
+    let speechDuration = 2800;
+    if ("speechSynthesis" in window) {
+      try {
+        window.speechSynthesis.cancel();
+        const spokenPhrase = "Happy Birthday Pihu! Wishing you a very very Happy Birthday from Saksham!";
+        const utterance = new SpeechSynthesisUtterance(spokenPhrase);
+        utterance.rate = 0.95;
+        utterance.pitch = 1.25; // Friendly, high-spirited voice
+        utterance.lang = "en-IN";
+
+        utterance.onend = () => finishSpeaking();
+        utterance.onerror = () => finishSpeaking();
+        window.speechSynthesis.speak(utterance);
+      } catch (e) {
+        console.warn("Speech synthesis error:", e);
+        setTimeout(finishSpeaking, speechDuration);
+      }
+    } else {
+      setTimeout(finishSpeaking, speechDuration);
+    }
+
+    // Safety fallback
+    setTimeout(finishSpeaking, 3500);
+  }
+
+  function finishSpeaking() {
+    if (!isSpeaking) return;
+    isSpeaking = false;
+    if (mascot) mascot.classList.remove("speaking");
+    if (mascotMouth) mascotMouth.classList.remove("talking");
+  }
+
+  // Interactive Buttons
+  if (speakBtn) {
+    speakBtn.addEventListener("click", speakMascotWish);
+  }
+
+  if (mascot) {
+    mascot.addEventListener("click", speakMascotWish);
+  }
+
+  if (danceBtn) {
+    danceBtn.addEventListener("click", () => {
+      if (window.sound) sound.playCelebration();
+      if (mascot) {
+        mascot.classList.add("dancing");
+        setTimeout(() => mascot.classList.remove("dancing"), 2500);
+      }
+      if (typeof confetti === "function") {
+        confetti({ particleCount: 45, spread: 80, origin: { y: 0.65 } });
+      }
+      showToast("💃 Mascot is doing a birthday dance for Pihu!");
     });
   }
+
+  if (cheerBtn) {
+    cheerBtn.addEventListener("click", () => {
+      if (window.sound) sound.playPop();
+      if (typeof confetti === "function") {
+        confetti({ particleCount: 30, spread: 70, origin: { y: 0.7 } });
+      }
+
+      // Spawn floating heart balloons
+      const emojis = ["🎈", "💖", "✨", "⭐", "🎉", "🎂"];
+      for (let i = 0; i < 6; i++) {
+        const balloon = document.createElement("div");
+        balloon.textContent = emojis[i % emojis.length];
+        balloon.style.position = "absolute";
+        balloon.style.left = `${30 + (i * 12)}%`;
+        balloon.style.bottom = "80px";
+        balloon.style.fontSize = "2rem";
+        balloon.style.pointerEvents = "none";
+        balloon.style.zIndex = "10";
+        balloon.style.transition = "all 2s ease-out";
+        balloon.style.opacity = "1";
+
+        if (stage) stage.appendChild(balloon);
+
+        setTimeout(() => {
+          balloon.style.transform = `translateY(-${140 + Math.random() * 80}px) scale(1.4)`;
+          balloon.style.opacity = "0";
+        }, 50);
+
+        setTimeout(() => balloon.remove(), 2100);
+      }
+      showToast("🎈 Warm birthday wishes floating to Pihu!");
+    });
+  }
+
+  // Auto-greet slightly after arriving
+  setTimeout(() => {
+    if (!scene45Initialized) return;
+    speakMascotWish();
+  }, 700);
 }
 
 /**
  * ============================================================================
- * SCENE 5: BLESSINGS GARDEN
+ * SCENE 5: BLESSINGS GARDEN (Enchanted Fairytale Garden)
  * ============================================================================
  */
 let scene5Initialized = false;
@@ -531,71 +622,274 @@ function initScene5() {
   scene5Initialized = true;
 
   const stage = document.getElementById("garden-stage");
+  const plotsContainer = document.getElementById("garden-plots-container");
   const countEl = document.getElementById("blessings-bloom-count");
-  let bloomedCount = 0;
+  const magicWaterBtn = document.getElementById("garden-magic-water-btn");
+  const plantNextBtn = document.getElementById("garden-plant-next-btn");
+  const resetBtn = document.getElementById("garden-reset-btn");
+  const hintLabel = document.getElementById("garden-hint-label");
+
+  // Garden Blessing Modal elements
+  const modal = document.getElementById("garden-blessing-modal");
+  const modalClose = document.getElementById("garden-modal-close");
+  const modalText = document.getElementById("garden-modal-text");
+  const modalIcon = document.getElementById("garden-modal-icon");
+  const modalTitle = document.getElementById("garden-modal-title");
+
+  const GARDEN_FLOWERS = [
+    { id: 1, name: "Cherry Blossom", emoji: "🌸", title: "Confidence & Grace" },
+    { id: 2, name: "Golden Sunflower", emoji: "🌻", title: "Warmth & Joy" },
+    { id: 3, name: "Royal Tulip", emoji: "🌷", title: "Inner Composure" },
+    { id: 4, name: "Velvet Rose", emoji: "🌹", title: "Courage & Strength" },
+    { id: 5, name: "Mystic Lotus", emoji: "🪷", title: "Wisdom & Clarity" },
+    { id: 6, name: "Sunshine Daisy", emoji: "🌼", title: "Laughter & Smiles" },
+    { id: 7, name: "Coral Hibiscus", emoji: "🌺", title: "Spark & Energy" },
+    { id: 8, name: "Starlight Bouquet", emoji: "💐", title: "Limitless Dreams" }
+  ];
+
+  let bloomedPlots = new Set();
   let celebrationFired = false;
-  const maxBlessings = CONFIG.blessings.length;
-  const flowerEmojis = ["🌸", "🌻", "🌷", "🌹", "🌼", "🌺", "💐", "🪷"];
-  const usedBlessings = new Set();
+  const maxBlessings = Math.min(CONFIG.blessings.length, GARDEN_FLOWERS.length);
 
-  if (!stage) return;
+  function openBlessingModal(flower, blessingText) {
+    if (!modal) return;
+    if (modalIcon) modalIcon.textContent = flower.emoji;
+    if (modalTitle) modalTitle.textContent = `${flower.name} • ${flower.title}`;
+    if (modalText) modalText.textContent = blessingText;
+    modal.classList.add("active");
+    if (window.sound) sound.playChime();
+  }
 
-  stage.addEventListener("click", (e) => {
-    const rect = stage.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+  if (modalClose) {
+    modalClose.addEventListener("click", () => {
+      if (modal) modal.classList.remove("active");
+    });
+  }
 
-    if (y < rect.height * 0.35) return; // only lower 65%
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.remove("active");
+    });
+  }
 
-    sound.playSparkle();
+  // Render 8 garden beds
+  function renderPlots() {
+    if (!plotsContainer) return;
+    plotsContainer.innerHTML = "";
 
-    const flower = document.createElement("div");
-    flower.className = "bloomed-flower";
-    flower.style.left = `${x}px`;
-    flower.style.top = `${y}px`;
+    for (let i = 0; i < maxBlessings; i++) {
+      const fl = GARDEN_FLOWERS[i];
+      const isBloomed = bloomedPlots.has(i);
 
-    // Pick unique blessing if possible
-    let blessingIdx = bloomedCount % maxBlessings;
-    if (usedBlessings.size < maxBlessings) {
-      while (usedBlessings.has(blessingIdx)) {
-        blessingIdx = (blessingIdx + 1) % maxBlessings;
+      const plotEl = document.createElement("div");
+      plotEl.className = "garden-plot";
+      plotEl.dataset.plotIndex = i;
+      plotEl.setAttribute("role", "button");
+      plotEl.setAttribute("tabindex", "0");
+      plotEl.setAttribute("aria-label", `Garden plot ${i + 1}: ${fl.name}`);
+
+      if (isBloomed) {
+        plotEl.innerHTML = `
+          <div class="plot-bloomed-flower">
+            <span class="flower-tag-pill">${fl.name} ✨</span>
+            <div class="flower-petals-wrap">${fl.emoji}</div>
+            <div class="flower-stem-lush">
+              <span class="stem-leaf-left"></span>
+              <span class="stem-leaf-right"></span>
+            </div>
+          </div>
+          <div class="plot-mound">
+            <div class="plot-pebbles"><span>•</span><span>•</span><span>•</span></div>
+          </div>
+        `;
+      } else {
+        plotEl.innerHTML = `
+          <div class="plot-seedling">
+            <span class="seed-icon">🌱</span>
+            <span class="seed-tag">Plot #${i + 1}</span>
+          </div>
+          <div class="plot-mound">
+            <div class="plot-pebbles"><span>•</span><span>•</span><span>•</span></div>
+          </div>
+        `;
       }
-      usedBlessings.add(blessingIdx);
+
+      plotEl.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (bloomedPlots.has(i)) {
+          // Open blessing modal
+          openBlessingModal(fl, CONFIG.blessings[i]);
+        } else {
+          bloomPlot(i, true);
+        }
+      });
+
+      plotsContainer.appendChild(plotEl);
+    }
+  }
+
+  function bloomPlot(index, showModal = true) {
+    if (bloomedPlots.has(index)) return;
+    bloomedPlots.add(index);
+
+    const fl = GARDEN_FLOWERS[index];
+    const blessing = CONFIG.blessings[index];
+
+    if (window.sound) sound.playSparkle();
+
+    // Re-render plots
+    renderPlots();
+
+    if (countEl) countEl.textContent = `${bloomedPlots.size}/${maxBlessings}`;
+    if (hintLabel) hintLabel.textContent = `Tap any bloomed flower to view blessing ✨`;
+
+    if (showModal) {
+      setTimeout(() => {
+        openBlessingModal(fl, blessing);
+      }, 350);
     }
 
-    const blessingText = CONFIG.blessings[blessingIdx];
-    const emoji = flowerEmojis[bloomedCount % flowerEmojis.length];
-
-    flower.innerHTML = `
-      <div class="flower-petal-toast">${blessingText}</div>
-      <div class="flower-head" aria-hidden="true">${emoji}</div>
-      <div class="flower-stem"></div>
-    `;
-
-    stage.appendChild(flower);
-    bloomedCount++;
-    if (countEl) countEl.textContent = `${Math.min(bloomedCount, maxBlessings)}/${maxBlessings}`;
-
-    if (bloomedCount === maxBlessings && !celebrationFired) {
+    // Check celebration
+    if (bloomedPlots.size === maxBlessings && !celebrationFired) {
       celebrationFired = true;
-      sound.playCelebration();
-      showToast("🦋 Garden of Blessings in full bloom! Butterflies released!");
-      if (typeof confetti === "function") {
-        confetti({ particleCount: 60, spread: 80, origin: { y: 0.7 } });
+      triggerGardenCelebration();
+    }
+  }
+
+  function triggerGardenCelebration() {
+    if (window.sound) sound.playCelebration();
+    showToast("🌸 The Garden of Blessings is in Full Radiant Bloom for Pihu! 🦋✨");
+
+    // Add rainbow arch
+    if (stage && !stage.querySelector(".garden-rainbow")) {
+      const rainbow = document.createElement("div");
+      rainbow.className = "garden-rainbow";
+      stage.appendChild(rainbow);
+    }
+
+    // Release 3D fluttering butterflies
+    if (stage) {
+      const bEmojis = ["🦋", "✨", "🦋", "🌸"];
+      for (let i = 0; i < 4; i++) {
+        const b = document.createElement("div");
+        b.className = "fluttering-butterfly";
+        b.textContent = bEmojis[i % bEmojis.length];
+        b.style.top = `${15 + (i * 20)}%`;
+        b.style.animationDelay = `${i * 1.5}s`;
+        stage.appendChild(b);
       }
     }
-  });
 
-  // Spawn ambient fireflies
-  for (let i = 0; i < 12; i++) {
+    if (typeof confetti === "function") {
+      confetti({ particleCount: 70, spread: 90, origin: { y: 0.65 } });
+    }
+  }
+
+  // Magic Bloom All button (cascading wave)
+  if (magicWaterBtn) {
+    magicWaterBtn.addEventListener("click", () => {
+      let delay = 0;
+      for (let i = 0; i < maxBlessings; i++) {
+        if (!bloomedPlots.has(i)) {
+          setTimeout(() => {
+            bloomPlot(i, false);
+          }, delay);
+          delay += 350;
+        }
+      }
+      if (delay > 0) {
+        showToast("🪄💧 Magic watering can is blooming all flowers!");
+      } else {
+        showToast("🌸 All flowers are already in full bloom!");
+      }
+    });
+  }
+
+  // Sprout Next button
+  if (plantNextBtn) {
+    plantNextBtn.addEventListener("click", () => {
+      for (let i = 0; i < maxBlessings; i++) {
+        if (!bloomedPlots.has(i)) {
+          bloomPlot(i, true);
+          return;
+        }
+      }
+      showToast("🌸 All 8 flowers have bloomed!");
+    });
+  }
+
+  // Reset Garden button
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      bloomedPlots.clear();
+      celebrationFired = false;
+      renderPlots();
+      if (countEl) countEl.textContent = `0/${maxBlessings}`;
+      if (hintLabel) hintLabel.textContent = `Tap soil or plots to bloom a flower 🌷`;
+      if (stage) {
+        const rainbow = stage.querySelector(".garden-rainbow");
+        if (rainbow) rainbow.remove();
+        stage.querySelectorAll(".fluttering-butterfly").forEach(el => el.remove());
+        stage.querySelectorAll(".bloomed-wild-flower").forEach(el => el.remove());
+      }
+      showToast("🌱 Garden refreshed — ready to bloom again!");
+    });
+  }
+
+  // Free tapping anywhere on soil
+  if (stage) {
+    stage.addEventListener("click", (e) => {
+      if (e.target.closest(".garden-plot") || e.target.closest(".garden-toolbar") || e.target.closest("#garden-blessing-modal")) {
+        return;
+      }
+
+      // Check if there are unbloomed plots first
+      for (let i = 0; i < maxBlessings; i++) {
+        if (!bloomedPlots.has(i)) {
+          bloomPlot(i, true);
+          return;
+        }
+      }
+
+      // If all bloomed, spawn bonus sparkling wild flower at click point
+      const rect = stage.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      if (y > rect.height * 0.3) {
+        if (window.sound) sound.playSparkle();
+        const wildFlower = document.createElement("div");
+        wildFlower.className = "bloomed-wild-flower";
+        wildFlower.style.left = `${x}px`;
+        wildFlower.style.top = `${y}px`;
+
+        const wildEmojis = ["🌸", "🌺", "🌼", "🌷", "✨"];
+        const randEmoji = wildEmojis[Math.floor(Math.random() * wildEmojis.length)];
+
+        wildFlower.innerHTML = `
+          <div style="font-size: 1.8rem; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));">${randEmoji}</div>
+          <div style="width: 3px; height: 28px; background: #4ade80; border-radius: 2px;"></div>
+        `;
+        stage.appendChild(wildFlower);
+
+        setTimeout(() => wildFlower.remove(), 4000);
+      }
+    });
+  }
+
+  // Spawn fireflies
+  for (let i = 0; i < 10; i++) {
     const fly = document.createElement("div");
     fly.className = "firefly";
     fly.style.left = `${Math.random() * 88 + 4}%`;
-    fly.style.top = `${Math.random() * 75 + 5}%`;
+    fly.style.top = `${Math.random() * 70 + 5}%`;
     fly.style.animationDelay = `${Math.random() * 4}s`;
     fly.setAttribute("aria-hidden", "true");
-    stage.appendChild(fly);
+    if (stage) stage.appendChild(fly);
   }
+
+  // Initial render of garden plots
+  renderPlots();
 }
 
 /**

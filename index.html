@@ -57,12 +57,12 @@
     <div class="gate-card glass-card">
       <div class="gate-icon" aria-hidden="true">🎁</div>
       <h1 class="gate-title">A surprise is waiting for you...</h1>
-      <p class="gate-subtitle">Answer one small question to unlock it 💖</p>
-      <p class="gate-question">What is my nickname for you?</p>
-      <input id="gate-input" class="gate-input" type="text" placeholder="Type your answer..." autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Enter the answer">
+      <p class="gate-subtitle">Enter your name to unlock the surprise 💖</p>
+      <p class="gate-question">What is your name? 🌸</p>
+      <input id="gate-input" class="gate-input" type="text" placeholder="Apna naam likho yahan..." autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Enter your name">
       <div id="gate-error" class="gate-error" style="display:none;" aria-live="polite"></div>
       <button id="gate-submit" class="btn-primary gate-btn" aria-label="Submit answer">Unlock the Surprise ✨</button>
-      <button id="gate-hint" class="btn-secondary gate-hint-btn" aria-label="Get a hint">💡 Give me a hint</button>
+      <button id="gate-hint" class="btn-secondary gate-hint-btn" aria-label="Get a hint">💡 Need a hint?</button>
     </div>
   </div>
 
@@ -137,9 +137,9 @@
           <button class="coupon-redeem-btn" data-coupon="One free chai session (Saksham pays!)" aria-label="Redeem chai coupon">Redeem</button>
         </div>
         <div class="coupon-item">
-          <div class="coupon-icon">📚</div>
-          <div class="coupon-text">One help session for any assignment or project</div>
-          <button class="coupon-redeem-btn" data-coupon="One help session for any assignment or project" aria-label="Redeem assignment help coupon">Redeem</button>
+          <div class="coupon-icon">🤝</div>
+          <div class="coupon-text">Any help you need — big brother has your back, anytime!</div>
+          <button class="coupon-redeem-btn" data-coupon="Any help you need — big brother has your back, anytime!" aria-label="Redeem brotherly help coupon">Redeem</button>
         </div>
         <div class="coupon-item">
           <div class="coupon-icon">🍦</div>
@@ -270,10 +270,10 @@
 
           <div id="portrait-card" class="polaroid-card developed" role="button" tabindex="0" aria-label="Tap 5 times for a birthday secret">
             <div class="polaroid-image-frame">
-              <img id="portrait-img" class="polaroid-img" src="photo/WhatsApp%20Image%202026-10-29%20at%2011.01.05%20PM.jpeg" alt="Pihu and Saksham celebrating at the Navsrijan Ideathon at GEHU">
+              <img id="portrait-img" class="polaroid-img" src="photo/WhatsApp%20Image%202026-10-29%20at%2011.01.05%20PM.jpeg" alt="Pihu and Saksham celebrating together at GEHU">
             </div>
             <div id="portrait-caption" class="polaroid-caption">
-              Navsrijan Ideathon @ GEHU ✨
+              Memories @ GEHU 🌸✨
             </div>
             <div id="easter-wink-burst" class="easter-wink-burst" aria-hidden="true">💖😉🎉</div>
           </div>
@@ -335,10 +335,10 @@
     <section id="scene-4" class="scene" aria-label="Scene 4: Message from Saksham">
       <div class="scene-letter">
         <div class="letter-paper" role="article" aria-label="Birthday letter from Saksham">
-          <div class="letter-stamp" aria-label="Letter stamp: GEHU, November 3, Senior">
+          <div class="letter-stamp" aria-label="Letter stamp: GEHU, November 3, Big Brother">
             <span>GEHU</span>
             <span>NOV 3</span>
-            <span>SENIOR</span>
+            <span>BIG BRO</span>
           </div>
 
           <h2 class="letter-salutation">Hey Pihu,</h2>
@@ -348,7 +348,7 @@
           </div>
 
           <div class="letter-sign-block">
-            <span class="letter-valediction">Always cheering for you,</span>
+            <span class="letter-valediction">Always here for you, as your older brother,</span>
             <svg id="signature-svg" class="signature-svg" viewBox="0 0 200 70" aria-label="Saksham's signature">
               <path class="signature-path" d="M 20 40 Q 40 10 50 45 Q 60 20 75 40 T 95 38 Q 110 20 120 45 T 145 35 T 165 40 M 15 52 Q 90 48 180 50" />
             </svg>
@@ -356,27 +356,105 @@
         </div>
 
         <div style="text-align: center; margin-top: 24px;">
-          <button class="btn-primary" onclick="nav.nextScene()" aria-label="Go to voice note scene">
-            Hear a Voice Note ➔
+          <button class="btn-primary" onclick="nav.nextScene()" aria-label="Go to birthday mascot scene">
+            Meet Your Birthday Mascot 🎈 ➔
           </button>
         </div>
       </div>
     </section>
 
-    <!-- SCENE 4.5: VOICE NOTE (Part C-4) -->
-    <section id="scene-4-5" class="scene" aria-label="Scene 4.5: Voice Note from Saksham">
-      <div class="scene-voice-note">
-        <h2 class="voice-note-heading">A little message from Saksham 🎙️</h2>
-        <p id="voice-note-status" class="voice-note-status">Loading voice note...</p>
+    <!-- SCENE 4.5: ANIMATED BIRTHDAY MASCOT (Part C-4) -->
+    <section id="scene-4-5" class="scene" aria-label="Scene 4.5: Birthday Wish Mascot">
+      <div class="scene-mascot-wish">
+        <h2 class="mascot-scene-heading">A Special Birthday Wish for Pihu! 🎂✨</h2>
+        <p id="mascot-scene-subtitle" class="mascot-scene-subtitle">
+          Look who showed up to wish you! Tap to hear the wish aloud 🎈
+        </p>
 
-        <div id="voice-record-vinyl" class="vinyl-record" role="button" tabindex="0" aria-label="Play or pause voice note">
-          <div class="vinyl-center">▶</div>
+        <!-- Animated Character Stage -->
+        <div id="mascot-stage" class="mascot-stage">
+          <!-- Speech Bubble -->
+          <div id="mascot-speech-bubble" class="mascot-speech-bubble" role="status" aria-live="polite">
+            <span class="speech-quote">“</span>
+            <span id="mascot-speech-text">Happy Birthday Pihu! May this year bring you endless happiness, bright wins, and lots of laughter! 🎉💖</span>
+            <span class="speech-quote">”</span>
+            <div class="speech-bubble-tail" aria-hidden="true"></div>
+          </div>
+
+          <!-- Cute Animated Mascot Character -->
+          <div id="birthday-mascot" class="birthday-mascot" role="button" tabindex="0" aria-label="Interactive animated birthday mascot - tap to speak">
+            <!-- Party Cone Hat -->
+            <div class="mascot-party-hat" aria-hidden="true">
+              <div class="hat-pompom"></div>
+              <div class="hat-cone"></div>
+            </div>
+
+            <!-- Head -->
+            <div class="mascot-head">
+              <!-- Cute Ears -->
+              <div class="mascot-ear ear-left"><div class="ear-inner"></div></div>
+              <div class="mascot-ear ear-right"><div class="ear-inner"></div></div>
+              <!-- Eyes with sparkles -->
+              <div class="mascot-eyes">
+                <div class="mascot-eye eye-left">
+                  <div class="eye-pupil"><div class="eye-sparkle"></div></div>
+                </div>
+                <div class="mascot-eye eye-right">
+                  <div class="eye-pupil"><div class="eye-sparkle"></div></div>
+                </div>
+              </div>
+              <!-- Rosy Cheeks -->
+              <div class="mascot-blush blush-left"></div>
+              <div class="mascot-blush blush-right"></div>
+              <!-- Cute Nose -->
+              <div class="mascot-nose"></div>
+              <!-- Animated Talking Mouth -->
+              <div id="mascot-mouth" class="mascot-mouth"></div>
+            </div>
+
+            <!-- Body & Arms -->
+            <div class="mascot-body">
+              <div class="mascot-belly">
+                <span class="mascot-badge" aria-hidden="true">🎂</span>
+              </div>
+              <!-- Waving Arm -->
+              <div class="mascot-arm arm-left">
+                <span class="arm-paw" aria-hidden="true">👋</span>
+              </div>
+              <!-- Balloon Holding Arm -->
+              <div class="mascot-arm arm-right">
+                <span class="arm-paw" aria-hidden="true">🎈</span>
+              </div>
+            </div>
+
+            <!-- Floating Balloons Cluster -->
+            <div class="mascot-balloons" aria-hidden="true">
+              <div class="mascot-balloon b-pink"></div>
+              <div class="mascot-balloon b-gold"></div>
+              <div class="mascot-balloon b-cyan"></div>
+            </div>
+
+            <!-- Mascot Shadow -->
+            <div class="mascot-shadow" aria-hidden="true"></div>
+          </div>
         </div>
 
-        <audio id="voice-note-audio" src="" preload="none" aria-label="Voice note from Saksham"></audio>
+        <!-- Mascot Control Buttons -->
+        <div class="mascot-actions">
+          <button id="mascot-speak-btn" class="btn-primary mascot-action-btn" aria-label="Hear the mascot speak">
+            🔊 Say It Aloud!
+          </button>
+          <button id="mascot-dance-btn" class="btn-secondary mascot-action-btn" aria-label="Make mascot dance">
+            💃 Happy Dance!
+          </button>
+          <button id="mascot-cheer-btn" class="btn-secondary mascot-action-btn" aria-label="Cheer with balloons">
+            🎈 Balloon Burst!
+          </button>
+        </div>
 
-        <button id="voice-skip-btn" class="btn-secondary" style="margin-top: 20px;" aria-label="Skip to next scene">
-          Enter The Blessings Garden ➔
+        <!-- Skip / Advance to Next Scene -->
+        <button id="voice-skip-btn" class="btn-primary" style="margin-top: 20px;" onclick="nav.nextScene()" aria-label="Enter the Blessings Garden">
+          Enter The Blessings Garden 🌸 ➔
         </button>
       </div>
     </section>
@@ -393,12 +471,59 @@
           The Blessings Garden 🌸
         </h2>
         <p class="wishes-instruction">
-          Tap anywhere on the rich soil below to sprout glowing birthday blessings!
+          Tap any enchanted plot or the rich soil to sprout glowing blessings! ✨
         </p>
 
-        <div id="garden-stage" class="garden-stage" role="button" tabindex="0" aria-label="Birthday blessing garden — tap to grow flowers">
-          <div class="garden-hint" aria-hidden="true">Tap the soil to bloom a flower 🌷</div>
-          <div class="garden-soil-line" aria-hidden="true"></div>
+        <!-- Garden Actions Toolbar -->
+        <div class="garden-toolbar">
+          <button id="garden-magic-water-btn" class="btn-secondary garden-tool-btn" aria-label="Water and bloom all flowers with magic">
+            🪄💧 Magic Bloom All
+          </button>
+          <button id="garden-plant-next-btn" class="btn-primary garden-tool-btn" aria-label="Sprout next flower">
+            🌱 Sprout Next
+          </button>
+          <button id="garden-reset-btn" class="btn-secondary garden-tool-btn" aria-label="Reset and re-plant garden">
+            🔄 Re-bloom
+          </button>
+        </div>
+
+        <!-- Garden Stage Canvas & Soil Beds -->
+        <div id="garden-stage" class="garden-stage" role="region" aria-label="Birthday blessing garden — tap to grow flowers">
+          <!-- Hanging Fairy String Lights -->
+          <div class="fairy-lights-garland" aria-hidden="true">
+            <span class="fl-bulb b-1"></span>
+            <span class="fl-bulb b-2"></span>
+            <span class="fl-bulb b-3"></span>
+            <span class="fl-bulb b-4"></span>
+            <span class="fl-bulb b-5"></span>
+            <span class="fl-bulb b-6"></span>
+            <span class="fl-bulb b-7"></span>
+            <span class="fl-bulb b-8"></span>
+          </div>
+
+          <div class="garden-hint" id="garden-hint-label" aria-hidden="true">Tap soil or plots to bloom a flower 🌷</div>
+
+          <!-- 8 Beautiful Landscape Flower Beds -->
+          <div class="garden-plots-container" id="garden-plots-container">
+            <!-- Plots generated dynamically or fallback -->
+          </div>
+
+          <!-- Bottom Rich Soil & Grass Line -->
+          <div class="garden-soil-line" aria-hidden="true">
+            <div class="soil-grass-blades"></div>
+          </div>
+        </div>
+
+        <!-- Garden Blessing Detail Modal Popup -->
+        <div id="garden-blessing-modal" class="wish-popup-modal" role="dialog" aria-modal="true" aria-label="Birthday blessing">
+          <div class="glass-card wish-card-inner garden-modal-inner">
+            <div id="garden-modal-icon" class="wish-icon" aria-hidden="true">🌸</div>
+            <h3 id="garden-modal-title" class="wish-title" style="color: var(--accent-mint);">Blessing for Pihu</h3>
+            <p id="garden-modal-text" class="wish-content"></p>
+            <button id="garden-modal-close" class="btn-primary" style="padding: 10px 24px; min-height: 40px;" aria-label="Keep this blessing in heart">
+              Keep in Heart 💖
+            </button>
+          </div>
         </div>
 
         <button class="btn-primary" onclick="nav.nextScene()" aria-label="Visit memory lane scene">

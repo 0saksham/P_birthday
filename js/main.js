@@ -18,8 +18,8 @@ const CONFIG = {
   photos: [
     {
       src: "photo/WhatsApp Image 2026-10-29 at 11.01.05 PM.jpeg",
-      caption: "Navsrijan Ideathon @ GEHU - Unstoppable energy! ✨",
-      alt: "Saksham and Pihu at Graphic Era Hill University Navsrijan Ideathon"
+      caption: "Memories @ GEHU - Unforgettable moments together! ✨",
+      alt: "Saksham and Pihu at Graphic Era Hill University"
     }
   ],
 
@@ -30,9 +30,9 @@ const CONFIG = {
 
   // Custom memories & inside jokes for letter
   memories: {
-    memory_1: "the Navsrijan Ideathon days at Graphic Era, when we brainstormed until our heads buzzed and still kept laughing",
-    memory_2: "how you always ask the most insightful questions, even when everyone else is just nodding along",
-    inside_joke: "the endless post-event chai debates on who worked harder"
+    memory_1: "when we first connected while you were in 1st year and I was in 2nd year, and how you've always stood firmly by me with true support",
+    memory_2: "how you always bring thoughtful advice, honest questions, and true loyalty to everything",
+    inside_joke: "our endless college discussions and post-class chai breaks"
   },
 
   // 12 distinct wishes for Scene 3 (The interactive night sky)
@@ -70,25 +70,25 @@ const CONFIG = {
     { emoji: "💖", name: "Her Kindness", desc: "Always there with a genuine smile and a helping hand for everyone." },
     { emoji: "☕", name: "Chai Partner", desc: "Always ready for a tea break and an honest conversation." },
     { emoji: "🧠", name: "Quick Wit", desc: "Sharp replies, smart perspectives, and a great sense of humor." },
-    { emoji: "🌟", name: "True Potential", desc: "A junior who inspires everyone around her to push harder." }
+    { emoji: "🛡️", name: "Always in Support", desc: "Ever since 1st year, she has always stood with me and backed me up through thick and thin." }
   ],
 
   // Full letter draft from Saksham to Pihu (Scene 4)
   letter: {
     salutation: "Hey Pihu,",
     paragraphs: [
-      "Happy Birthday! Today is all about celebrating you, and as your senior, I wanted to take a moment to tell you how proud I am of the person you are becoming.",
-      "From the first time we worked together—especially {{memory_1}}—it was obvious that you bring something rare to the table. You don't just participate; you care deeply about what you do. {{memory_2}}, and that honesty is your superpower.",
-      "College can sometimes feel overwhelming, with endless submissions, expectations, and {{inside_joke}}. But remember: your talent and calm resilience speak louder than any stressful week. Never let anyone, or your own fleeting doubts, dim that bright spark.",
-      "As your senior, my door is always open—whether you need project advice, career guidance, or just a chai break when things get hectic. Keep aiming high, keep smiling that unmistakable smile, and make this year completely yours."
+      "Happy Birthday! Today is all about celebrating you. Looking back to when we first connected—when you were in 1st year and I was in 2nd year—I wanted to take a moment to tell you how truly grateful and proud I am to have you as my younger sister in college.",
+      "Right from the start, you've always stood firmly with me. Whenever things were tough or chaotic, you always came forward in support without a second thought. {{memory_1}}. Having someone so loyal, genuine, and grounded in your corner is a blessing, and {{memory_2}}.",
+      "College life and the journey ahead can have its hectic days, submissions, and {{inside_joke}}. But remember: your strength, kindness, and calm resilience speak louder than any stressful phase. Never let fleeting doubts dim that brilliant spark.",
+      "Always remember that as an older brother, I am forever in your corner. Whether you need guidance, someone to back you up in any situation, or just a chai break when things get heavy—I'm always right here for you. Keep smiling that genuine smile, aim high, and make this year your happiest one yet."
     ],
-    valediction: "Always cheering for you,",
+    valediction: "Always here for you, as your older brother,",
     signatureText: "Saksham"
   },
 
   // PART C: Secret lock gate answer (forgiving: case-insensitive, trimmed)
-  secretAnswer: "pihu", // answer to "What is my nickname for you?"
-  secretHint: "It's the name on this page 😊",
+  secretAnswer: "pihu", // answer to "What is your name?"
+  secretHint: "apna naam bhul gi pihu wo likh 😂",
 
   // PART C: Preview mode bypass (set true while testing)
   previewMode: true,
@@ -640,8 +640,8 @@ const MASCOT_MESSAGES = [
   "Pop the balloons to find secret words! 🎈",
   "Look at that golden glow! Tap the photo for surprises ✨",
   "12 glowing stars hold 12 special wishes. Find them all! 🌟",
-  "A letter straight from your senior's heart... 📜",
-  "A surprise voice note is waiting! 🎙️",
+  "A heartfelt letter from your older brother... 💌",
+  "A special birthday friend is waiting to wish you! 🎈✨",
   "Tap the garden soil to make blessings bloom! 🌸",
   "Flip the memory cards or play the mini cake game! 🍰",
   "Blow into your mic or tap the candles to make a wish! 🎂"
@@ -836,8 +836,8 @@ function initSecretGate() {
   const tryAnswer = () => {
     const val = (gateInput ? gateInput.value : "").trim().toLowerCase();
     const correct = CONFIG.secretAnswer.toLowerCase();
-    // Forgiving: accept exact or if answer contains recipientName
-    if (val === correct || val === CONFIG.recipientName.toLowerCase()) {
+    // Forgiving: accept exact "pihu", or if it includes "pihu", or matches recipientName
+    if (val === correct || val.includes("pihu") || val === CONFIG.recipientName.toLowerCase()) {
       sessionStorage.setItem("pihu_gate_passed", "1");
       gate.style.opacity = "0";
       gate.style.transition = "opacity 0.6s ease";
@@ -847,9 +847,9 @@ function initSecretGate() {
       }, 600);
     } else {
       if (gateError) {
-        gateError.textContent = "Not quite — try again! 😊";
+        gateError.textContent = "Arre apna naam bhul gi kya? Hint dekh lo! 😂";
         gateError.style.display = "block";
-        setTimeout(() => gateError.style.display = "none", 2000);
+        setTimeout(() => gateError.style.display = "none", 3000);
       }
       if (gateInput) { gateInput.value = ""; gateInput.focus(); }
     }
