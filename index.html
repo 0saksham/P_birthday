@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title>🎂 Happy Birthday Pihu! ✨</title>
+  <meta name="description" content="A magical, interactive birthday surprise world crafted with love for Pihu on 3rd November.">
+  <meta name="theme-color" content="#1b1035">
+
+  <!-- PART C-1: Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎂</text></svg>">
+
+  <!-- PART C-2: Open Graph / Twitter meta for link previews -->
+  <meta property="og:title" content="Something is waiting for you, Pihu 🎁">
+  <meta property="og:description" content="A magical birthday surprise crafted just for you. Open it! ✨">
+  <meta property="og:image" content="photo/WhatsApp%20Image%202026-10-29%20at%2011.01.05%20PM.jpeg">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Something is waiting for you, Pihu 🎁">
+  <meta name="twitter:description" content="A magical birthday surprise crafted just for you. Open it! ✨">
+  <meta name="twitter:image" content="photo/WhatsApp%20Image%202026-10-29%20at%2011.01.05%20PM.jpeg">
+
+  <!-- PART C-9: PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Pihu's Birthday 🎂">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Fredoka:wght@500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Canvas Confetti CDN (degrades gracefully offline) -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+  <!-- Atmospheric Background & Canvas Layers -->
+  <div id="ambient-background" aria-hidden="true">
+    <canvas id="star-canvas"></canvas>
+    <div class="aurora-container">
+      <div class="aurora-blob aurora-1"></div>
+      <div class="aurora-blob aurora-2"></div>
+      <div class="aurora-blob aurora-3"></div>
+    </div>
+  </div>
+  <div class="noise-overlay" aria-hidden="true"></div>
+  <canvas id="cursor-canvas" aria-hidden="true"></canvas>
+
+  <!-- PART C-3: Secret Lock Gate -->
+  <div id="secret-gate" class="secret-gate" role="dialog" aria-label="Birthday secret gate" aria-modal="true" style="display:none;">
+    <div class="gate-card glass-card">
+      <div class="gate-icon" aria-hidden="true">🎁</div>
+      <h1 class="gate-title">A surprise is waiting for you...</h1>
+      <p class="gate-subtitle">Answer one small question to unlock it 💖</p>
+      <p class="gate-question">What is my nickname for you?</p>
+      <input id="gate-input" class="gate-input" type="text" placeholder="Type your answer..." autocomplete="off" autocorrect="off" spellcheck="false" aria-label="Enter the answer">
+      <div id="gate-error" class="gate-error" style="display:none;" aria-live="polite"></div>
+      <button id="gate-submit" class="btn-primary gate-btn" aria-label="Submit answer">Unlock the Surprise ✨</button>
+      <button id="gate-hint" class="btn-secondary gate-hint-btn" aria-label="Get a hint">💡 Give me a hint</button>
+    </div>
+  </div>
+
+  <!-- Preloader -->
+  <div id="loader" role="status" aria-live="polite" aria-label="Loading birthday surprise">
+    <div class="loader-gift-icon" aria-hidden="true">🎁</div>
+    <div class="loader-text">Wrapping your gift... ✨</div>
+    <div class="loader-bar-wrap" aria-hidden="true">
+      <div class="loader-bar"></div>
+    </div>
+  </div>
+
+  <!-- Persistent Header UI -->
+  <header class="persistent-topbar">
+    <!-- PART C-1: "For Pihu" ribbon -->
+    <div class="for-pihu-ribbon" aria-hidden="true">🎀 For Pihu</div>
+    <div class="time-pill">
+      <span id="time-greeting-text" aria-live="polite">✨ Special Birthday Surprise</span>
+    </div>
+    <div class="top-actions">
+      <button id="mute-btn" class="icon-btn" aria-label="Toggle background music" title="Toggle Sound">
+        🎵
+      </button>
+    </div>
+  </header>
+
+  <!-- Floating Scene Progress Navigation -->
+  <nav class="scene-progress-nav" aria-label="Scene Navigation">
+    <button id="prev-scene-btn" class="nav-arrow-btn" aria-label="Previous Scene">‹</button>
+    <div id="nav-dots-container" style="display: flex; gap: 8px;" role="tablist" aria-label="Scene progress"></div>
+    <button id="next-scene-btn" class="nav-arrow-btn" aria-label="Next Scene">›</button>
+  </nav>
+
+  <!-- Floating Mascot Companion (Tara the Star) -->
+  <aside id="mascot-companion" aria-label="Birthday Guide Mascot">
+    <div id="mascot-bubble" class="mascot-bubble" role="status" aria-live="polite">Tap the gift box to unlock your surprise! 🎁</div>
+    <svg class="mascot-avatar" viewBox="0 0 100 100" role="img" aria-label="Tara the star mascot">
+      <polygon points="50,5 64,36 98,38 72,61 80,95 50,76 20,95 28,61 2,38 36,36" fill="#ffd86b" stroke="#ffb58a" stroke-width="4" stroke-linejoin="round" />
+      <circle cx="40" cy="46" r="4.5" fill="#1b1035" />
+      <circle cx="60" cy="46" r="4.5" fill="#1b1035" />
+      <circle cx="42" cy="44" r="1.5" fill="#ffffff" />
+      <circle cx="62" cy="44" r="1.5" fill="#ffffff" />
+      <path d="M 43 56 Q 50 63 57 56" fill="none" stroke="#1b1035" stroke-width="3" stroke-linecap="round" />
+      <ellipse cx="33" cy="52" rx="4" ry="2.5" fill="#ff7eb6" opacity="0.6" />
+      <ellipse cx="67" cy="52" rx="4" ry="2.5" fill="#ff7eb6" opacity="0.6" />
+    </svg>
+  </aside>
+
+  <!-- Easter Egg Toast Alert -->
+  <div id="easter-toast" role="alert" aria-live="assertive"></div>
+
+  <!-- Photo Lightbox (Part C-5) -->
+  <div id="photo-lightbox" class="photo-lightbox" role="dialog" aria-label="Photo viewer" aria-modal="true">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close photo">&times;</button>
+    <img id="lightbox-img" src="" alt="" class="lightbox-img">
+  </div>
+
+  <!-- PART C-11: Paper Plane Coupon Book -->
+  <button id="paper-plane-btn" class="paper-plane-fab" aria-label="Open coupon book" style="display:none;" title="Surprise coupon book!">
+    ✈️
+  </button>
+
+  <div id="coupon-book" class="coupon-book-overlay" role="dialog" aria-label="Coupon book" aria-modal="true">
+    <div class="coupon-book-card glass-card">
+      <button id="coupon-book-close" class="coupon-book-close" aria-label="Close coupon book">✕</button>
+      <h2 class="coupon-book-title">🎟️ Pihu's Coupon Book</h2>
+      <p class="coupon-book-subtitle">Tap any coupon to redeem it!</p>
+      <div class="coupons-grid">
+        <div class="coupon-item">
+          <div class="coupon-icon">☕</div>
+          <div class="coupon-text">One free chai session (Saksham pays!)</div>
+          <button class="coupon-redeem-btn" data-coupon="One free chai session (Saksham pays!)" aria-label="Redeem chai coupon">Redeem</button>
+        </div>
+        <div class="coupon-item">
+          <div class="coupon-icon">📚</div>
+          <div class="coupon-text">One help session for any assignment or project</div>
+          <button class="coupon-redeem-btn" data-coupon="One help session for any assignment or project" aria-label="Redeem assignment help coupon">Redeem</button>
+        </div>
+        <div class="coupon-item">
+          <div class="coupon-icon">🍦</div>
+          <div class="coupon-text">One ice cream treat — your choice!</div>
+          <button class="coupon-redeem-btn" data-coupon="One ice cream treat — your choice!" aria-label="Redeem ice cream coupon">Redeem</button>
+        </div>
+        <div class="coupon-item">
+          <div class="coupon-icon">🎵</div>
+          <div class="coupon-text">One song/playlist recommendation from Saksham</div>
+          <button class="coupon-redeem-btn" data-coupon="One song/playlist recommendation from Saksham" aria-label="Redeem playlist coupon">Redeem</button>
+        </div>
+        <div class="coupon-item">
+          <div class="coupon-icon">🌟</div>
+          <div class="coupon-text">One unsolicited compliment delivered in person</div>
+          <button class="coupon-redeem-btn" data-coupon="One unsolicited compliment delivered in person" aria-label="Redeem compliment coupon">Redeem</button>
+        </div>
+      </div>
+      <p class="coupon-footer">Valid forever. No expiry. Happy Birthday, Pihu! 🎂</p>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MAIN SCENES VIEWPORT
+       ========================================================================= -->
+  <main id="scenes-viewport">
+
+    <!-- SCENE 0: LOCKED GIFT (Entry Gate) -->
+    <section id="scene-0" class="scene active" aria-label="Scene 0: Locked Gift" aria-roledescription="Birthday scene">
+      <div class="gift-scene-content">
+        <h1 class="gift-tagline">Something is waiting for you, Pihu... ✨</h1>
+
+        <div id="gift-box-wrapper" class="gift-box-wrapper" role="button" tabindex="0" aria-label="Tap to unlock the birthday gift — tap 3 times">
+          <div class="gift-glow-ring" aria-hidden="true"></div>
+          <svg class="gift-box-svg" viewBox="0 0 200 200" aria-hidden="true">
+            <!-- Box Body -->
+            <rect x="40" y="75" width="120" height="95" rx="14" fill="url(#giftGrad)" />
+            <!-- Vertical Ribbon -->
+            <rect x="88" y="75" width="24" height="95" fill="#ffd86b" />
+            <!-- Box Lid -->
+            <rect x="32" y="58" width="136" height="25" rx="8" fill="#ff7eb6" />
+            <rect x="88" y="58" width="24" height="25" fill="#ffd86b" />
+            <!-- Ribbon Bow Loops -->
+            <path d="M 100 58 C 70 20 40 45 92 56 Z" fill="#ffd86b" />
+            <path d="M 100 58 C 130 20 160 45 108 56 Z" fill="#ffd86b" />
+            <circle cx="100" cy="58" r="8" fill="#f59e0b" />
+            <!-- Gradients -->
+            <defs>
+              <linearGradient id="giftGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ff7eb6" />
+                <stop offset="100%" stop-color="#9333ea" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
+        <div class="gift-tap-dots" aria-hidden="true">
+          <div class="tap-dot"></div>
+          <div class="tap-dot"></div>
+          <div class="tap-dot"></div>
+        </div>
+
+        <div class="gift-instruction" aria-live="polite">Tap the gift 3 times to unwrap 🎁</div>
+      </div>
+    </section>
+
+    <!-- SCENE 1: COUNTDOWN & HELLO -->
+    <section id="scene-1" class="scene" aria-label="Scene 1: Countdown and Hello">
+      <div class="balloon-container" id="balloon-container" aria-hidden="true"></div>
+
+      <div class="scene-countdown">
+        <div class="typewriter-text" aria-live="polite">
+          <span id="typewriter-content"></span><span class="cursor-blink" aria-hidden="true"></span>
+        </div>
+
+        <div class="glass-card countdown-box" role="timer" aria-label="Birthday countdown">
+          <div class="countdown-headline">The Big Day Arrives In</div>
+
+          <div id="countdown-grid-wrap" class="countdown-grid">
+            <div class="countdown-card">
+              <span id="count-days" class="countdown-num" aria-label="days">00</span>
+              <span class="countdown-unit" aria-hidden="true">Days</span>
+            </div>
+            <div class="countdown-card">
+              <span id="count-hours" class="countdown-num" aria-label="hours">00</span>
+              <span class="countdown-unit" aria-hidden="true">Hours</span>
+            </div>
+            <div class="countdown-card">
+              <span id="count-mins" class="countdown-num" aria-label="minutes">00</span>
+              <span class="countdown-unit" aria-hidden="true">Mins</span>
+            </div>
+            <div class="countdown-card">
+              <span id="count-secs" class="countdown-num" aria-label="seconds">00</span>
+              <span class="countdown-unit" aria-hidden="true">Secs</span>
+            </div>
+          </div>
+
+          <div id="birthday-today-burst" class="birthday-today-burst" role="alert" aria-live="assertive">
+            🎉 Today is the Day! Happy Birthday, Pihu! 🎂✨
+          </div>
+        </div>
+
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 14px;">
+          🎈 Tap the floating balloons to pop secret messages!
+        </p>
+
+        <button class="btn-primary" style="margin-top: 24px;" onclick="nav.nextScene()" aria-label="Go to birthday star scene">
+          See The Birthday Star ➔
+        </button>
+      </div>
+    </section>
+
+    <!-- SCENE 2: THE PORTRAIT REVEAL -->
+    <section id="scene-2" class="scene" aria-label="Scene 2: The Portrait Reveal">
+      <div class="portrait-container">
+        <h2 class="portrait-heading" title="Long-press for a secret!" tabindex="0">
+          Happy Birthday, Pihu!
+        </h2>
+        <p class="portrait-subtext">3rd November, a very good day to be born.</p>
+
+        <div class="polaroid-wrapper" aria-label="Interactive polaroid photo">
+          <!-- Orbiting celestial items -->
+          <div class="orbiting-track" aria-hidden="true">
+            <span class="orbit-item orbit-1">✨</span>
+            <span class="orbit-item orbit-2">🌸</span>
+            <span class="orbit-item orbit-3">⭐</span>
+            <span class="orbit-item orbit-4">💖</span>
+          </div>
+
+          <div id="portrait-card" class="polaroid-card developed" role="button" tabindex="0" aria-label="Tap 5 times for a birthday secret">
+            <div class="polaroid-image-frame">
+              <img id="portrait-img" class="polaroid-img" src="photo/WhatsApp%20Image%202026-10-29%20at%2011.01.05%20PM.jpeg" alt="Pihu and Saksham celebrating at the Navsrijan Ideathon at GEHU">
+            </div>
+            <div id="portrait-caption" class="polaroid-caption">
+              Navsrijan Ideathon @ GEHU ✨
+            </div>
+            <div id="easter-wink-burst" class="easter-wink-burst" aria-hidden="true">💖😉🎉</div>
+          </div>
+        </div>
+
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          ✨ Move mouse or tilt phone for 3D effect. Tap photo for surprises!
+        </p>
+
+        <button class="btn-primary" onclick="nav.nextScene()" aria-label="Go to wishes sky scene">
+          Catch The Wishes Sky ➔
+        </button>
+      </div>
+    </section>
+
+    <!-- SCENE 3: WISHES SKY (Interactive Night Sky) -->
+    <section id="scene-3" class="scene" aria-label="Scene 3: Wishes Sky">
+      <div class="scene-wishes">
+        <div class="wishes-counter-pill" aria-live="polite" aria-label="Stars found counter">
+          <span>Stars Found:</span>
+          <strong id="wishes-found-count">0/12</strong>
+        </div>
+
+        <h2 style="font-family: var(--font-display); font-size: clamp(1.6rem, 5vw, 2.4rem); color: var(--accent-gold); margin-bottom: 6px;">
+          The Wishes Sky 🌌
+        </h2>
+        <p class="wishes-instruction">
+          Tap each glowing star in the night sky to unveil a heartfelt wish!
+        </p>
+
+        <div id="wishes-sky-wrap" class="wishes-sky-canvas-wrap" role="group" aria-label="Interactive star wishes">
+          <!-- Constellation lines SVG overlay -->
+          <svg id="constellation-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <!-- P shape + heart constellation -->
+            <path d="M 20,80 L 20,20 L 50,20 Q 75,35 50,50 L 20,50 M 50,50 Q 80,70 50,90 Q 20,70 50,50"
+                  fill="none" stroke="#ffd86b" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.85" />
+          </svg>
+        </div>
+
+        <button class="btn-primary" style="margin-top: 20px;" onclick="nav.nextScene()" aria-label="Go to letter from Saksham scene">
+          Read Letter From Saksham ➔
+        </button>
+      </div>
+
+      <!-- Wish Detail Modal Popup -->
+      <div id="wish-modal" class="wish-popup-modal" role="dialog" aria-modal="true" aria-label="Birthday wish">
+        <div class="glass-card wish-card-inner">
+          <div id="wish-modal-icon" class="wish-icon" aria-hidden="true">🌟</div>
+          <h3 id="wish-modal-title" class="wish-title">Special Wish</h3>
+          <p id="wish-modal-text" class="wish-content"></p>
+          <button id="wish-modal-close" class="btn-primary" style="padding: 10px 24px; min-height: 40px;" aria-label="Close wish and keep exploring">
+            Keep Exploring ✨
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 4: MESSAGE FROM SAKSHAM -->
+    <section id="scene-4" class="scene" aria-label="Scene 4: Message from Saksham">
+      <div class="scene-letter">
+        <div class="letter-paper" role="article" aria-label="Birthday letter from Saksham">
+          <div class="letter-stamp" aria-label="Letter stamp: GEHU, November 3, Senior">
+            <span>GEHU</span>
+            <span>NOV 3</span>
+            <span>SENIOR</span>
+          </div>
+
+          <h2 class="letter-salutation">Hey Pihu,</h2>
+
+          <div id="letter-body-content" class="letter-body">
+            <!-- Rendered dynamically from CONFIG.letter with real memories -->
+          </div>
+
+          <div class="letter-sign-block">
+            <span class="letter-valediction">Always cheering for you,</span>
+            <svg id="signature-svg" class="signature-svg" viewBox="0 0 200 70" aria-label="Saksham's signature">
+              <path class="signature-path" d="M 20 40 Q 40 10 50 45 Q 60 20 75 40 T 95 38 Q 110 20 120 45 T 145 35 T 165 40 M 15 52 Q 90 48 180 50" />
+            </svg>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 24px;">
+          <button class="btn-primary" onclick="nav.nextScene()" aria-label="Go to voice note scene">
+            Hear a Voice Note ➔
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 4.5: VOICE NOTE (Part C-4) -->
+    <section id="scene-4-5" class="scene" aria-label="Scene 4.5: Voice Note from Saksham">
+      <div class="scene-voice-note">
+        <h2 class="voice-note-heading">A little message from Saksham 🎙️</h2>
+        <p id="voice-note-status" class="voice-note-status">Loading voice note...</p>
+
+        <div id="voice-record-vinyl" class="vinyl-record" role="button" tabindex="0" aria-label="Play or pause voice note">
+          <div class="vinyl-center">▶</div>
+        </div>
+
+        <audio id="voice-note-audio" src="" preload="none" aria-label="Voice note from Saksham"></audio>
+
+        <button id="voice-skip-btn" class="btn-secondary" style="margin-top: 20px;" aria-label="Skip to next scene">
+          Enter The Blessings Garden ➔
+        </button>
+      </div>
+    </section>
+
+    <!-- SCENE 5: BLESSINGS GARDEN -->
+    <section id="scene-5" class="scene" aria-label="Scene 5: Blessings Garden">
+      <div class="scene-garden">
+        <div class="wishes-counter-pill" aria-live="polite" aria-label="Blooms grown counter">
+          <span>Blooms Grown:</span>
+          <strong id="blessings-bloom-count">0/8</strong>
+        </div>
+
+        <h2 style="font-family: var(--font-display); font-size: clamp(1.6rem, 5vw, 2.4rem); color: var(--accent-mint); margin-bottom: 6px;">
+          The Blessings Garden 🌸
+        </h2>
+        <p class="wishes-instruction">
+          Tap anywhere on the rich soil below to sprout glowing birthday blessings!
+        </p>
+
+        <div id="garden-stage" class="garden-stage" role="button" tabindex="0" aria-label="Birthday blessing garden — tap to grow flowers">
+          <div class="garden-hint" aria-hidden="true">Tap the soil to bloom a flower 🌷</div>
+          <div class="garden-soil-line" aria-hidden="true"></div>
+        </div>
+
+        <button class="btn-primary" onclick="nav.nextScene()" aria-label="Visit memory lane scene">
+          Visit Memory Lane ➔
+        </button>
+      </div>
+    </section>
+
+    <!-- SCENE 6: MEMORY LANE & MINI-GAME -->
+    <section id="scene-6" class="scene" aria-label="Scene 6: Memory Lane and Mini Game">
+      <div class="scene-memories">
+        <h2 style="font-family: var(--font-display); font-size: clamp(1.6rem, 5vw, 2.4rem); color: var(--accent-gold); margin-bottom: 14px;">
+          Things We Admire About Pihu 🌟
+        </h2>
+
+        <div class="tab-switch-wrap" role="tablist" aria-label="Memory lane tabs">
+          <button id="tab-traits" class="tab-btn active" role="tab" aria-selected="true" aria-controls="traits-deck">Trait Cards</button>
+          <button id="tab-game" class="tab-btn" role="tab" aria-selected="false" aria-controls="game-wrap">Mini-Game: Catch Cakes 🍰</button>
+        </div>
+
+        <!-- Trait Cards Deck -->
+        <div id="traits-deck" class="traits-deck" role="tabpanel" aria-label="Personality trait cards"></div>
+
+        <!-- Mini-Game Stage -->
+        <div id="game-wrap" class="game-container" role="tabpanel" aria-label="Cake catching mini game">
+          <div class="game-hud" aria-live="polite">
+            <span id="game-score" aria-label="Game score">Score: 0</span>
+            <span id="game-timer" aria-label="Time remaining">Time: 20s</span>
+          </div>
+          <div id="game-stage" class="game-stage" aria-label="Move the plate to catch falling items">
+            <div id="catcher-plate" class="catcher-plate" aria-hidden="true">🍽️ Plate</div>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;" aria-live="polite">
+            Drag plate left/right to catch delicious cakes and stars!
+          </p>
+          <button id="replay-game-btn" class="btn-secondary" style="display:none; margin-top: 10px;" aria-label="Play game again">
+            🔄 Play Again
+          </button>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <button class="btn-primary" onclick="nav.nextScene()" aria-label="Go to birthday cake scene">
+            Cut The Birthday Cake ➔
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE 7: CAKE & GRAND FINALE -->
+    <section id="scene-7" class="scene" aria-label="Scene 7: Birthday Cake and Grand Finale">
+      <div class="scene-cake">
+        <h2 class="cake-title">Make a Birthday Wish! 🎂</h2>
+        <p class="cake-instructions">
+          Blow gently into your microphone or tap the candles to extinguish the flames!
+        </p>
+
+        <!-- Interactive Animated Cake -->
+        <div class="cake-stage" id="cake-interactive-stage" aria-label="Interactive birthday cake">
+          <div class="cake-candles-row">
+            <div class="candle" id="candle-1" role="button" tabindex="0" aria-label="Extinguish candle 1">
+              <div class="candle-smoke" aria-hidden="true"></div>
+              <div class="candle-flame" aria-hidden="true"></div>
+              <div class="candle-stick" aria-hidden="true"></div>
+            </div>
+            <div class="candle" id="candle-2" role="button" tabindex="0" aria-label="Extinguish candle 2">
+              <div class="candle-smoke" aria-hidden="true"></div>
+              <div class="candle-flame" aria-hidden="true"></div>
+              <div class="candle-stick" aria-hidden="true"></div>
+            </div>
+            <div class="candle" id="candle-3" role="button" tabindex="0" aria-label="Extinguish candle 3">
+              <div class="candle-smoke" aria-hidden="true"></div>
+              <div class="candle-flame" aria-hidden="true"></div>
+              <div class="candle-stick" aria-hidden="true"></div>
+            </div>
+          </div>
+
+          <div class="cake-tier-top" aria-hidden="true">
+            <div class="cake-icing-drips"></div>
+          </div>
+          <div class="cake-tier-bottom" aria-hidden="true"></div>
+          <div class="cake-plate" aria-hidden="true"></div>
+        </div>
+
+        <button id="mic-blow-btn" class="btn-secondary" style="font-size: 0.9rem;" aria-label="Use microphone to blow out candles">
+          🎙️ Blow with Microphone
+        </button>
+
+        <!-- Grand Finale Celebratory Section -->
+        <div id="finale-celebration" class="finale-celebration" aria-live="polite" role="region" aria-label="Birthday celebration">
+          <h2 class="finale-grand-title">
+            Happy Birthday, Pihu! ✨
+          </h2>
+          <p style="font-size: 1.15rem; color: var(--accent-peach); max-width: 480px;">
+            "May your days be filled with warm tea, huge achievements, and endless laughter. Have the best year yet!"
+          </p>
+
+          <!-- PART C-6: Wish Jar -->
+          <div id="wish-jar-section" class="wish-jar-section" style="display:none;">
+            <h3 class="wish-jar-heading">⭐ Make Your Own Wish</h3>
+            <p class="wish-jar-desc">Type your birthday wish and fold it into a star!</p>
+            <div class="wish-jar-input-row">
+              <input id="wish-jar-input" class="wish-jar-input" type="text" placeholder="I wish for..." maxlength="120" aria-label="Type your birthday wish">
+              <button id="wish-jar-submit" class="btn-primary" aria-label="Fold wish into a star">⭐ Wish!</button>
+            </div>
+            <div id="wish-jar-star" class="wish-jar-star" aria-hidden="true" style="display:none;">⭐</div>
+            <div id="wish-jar-display" class="wish-jar-display" style="display:none;" aria-live="polite"></div>
+            <button id="wish-jar-send" class="btn-secondary" style="display:none; margin-top: 10px;" aria-label="Send wish to Saksham via WhatsApp">
+              💬 Send Wish to Saksham
+            </button>
+          </div>
+
+          <!-- PART C-12: Memories Page End Card -->
+          <div class="memories-endcard" aria-label="2026 Birthday memory card">
+            <span class="endcard-year">Pihu, 2026</span>
+            <span class="endcard-date">3rd November • A day to remember ✨</span>
+          </div>
+
+          <div class="finale-actions">
+            <button id="replay-journey-btn" class="btn-secondary" aria-label="Replay the entire birthday journey">
+              🔄 Replay Journey
+            </button>
+            <button id="reply-saksham-btn" class="btn-primary" aria-label="Send a reply to Saksham on WhatsApp">
+              💬 Send a Reply to Saksham
+            </button>
+            <button id="save-wallpaper-btn" class="btn-secondary" aria-label="Save birthday wallpaper to phone">
+              📱 Save as Wallpaper
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Application Logic Scripts -->
+  <script src="js/main.js"></script>
+  <script src="js/scenes.js"></script>
+</body>
+</html>
