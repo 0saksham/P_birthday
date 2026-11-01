@@ -136,6 +136,7 @@ class SoundEngine {
 
   playBGM() {
     if (this.isMuted || this.bgmDisabled) return;
+    if (window.nav && window.nav.currentScene === window.nav.totalScenes - 1) return;
     this.init();
     if (this.audioCtx && this.audioCtx.state === "suspended") {
       this.audioCtx.resume().catch(() => {});
@@ -161,9 +162,31 @@ class SoundEngine {
   stopBGMForEndPage() {
     this.bgmDisabled = true;
     this.pauseBGM();
+    if (this.bgAudio) {
+      try {
+        this.bgAudio.pause();
+        this.bgAudio.currentTime = 0;
+      } catch (e) {}
+    }
+    const domAudio = document.getElementById("bg-music");
+    if (domAudio) {
+      try {
+        domAudio.pause();
+        domAudio.currentTime = 0;
+      } catch (e) {}
+    }
+    document.querySelectorAll("audio").forEach(a => {
+      try {
+        a.pause();
+        a.currentTime = 0;
+      } catch (e) {}
+    });
     if (this.ambientInterval) {
       clearInterval(this.ambientInterval);
       this.ambientInterval = null;
+    }
+    if (this.audioCtx && this.audioCtx.state === "running") {
+      this.audioCtx.suspend().catch(() => {});
     }
   }
 
@@ -199,6 +222,8 @@ class SoundEngine {
   }
 
   initBackgroundMusic() {
+    if (this.bgmDisabled) return;
+    if (window.nav && window.nav.currentScene === window.nav.totalScenes - 1) return;
     if (this.bgAudio) {
       if (!this.isMuted && !this.bgmDisabled && this.bgAudio.paused) {
         this.bgAudio.play().catch(() => {});
@@ -241,7 +266,7 @@ class SoundEngine {
     ];
     let chordIdx = 0;
     const playPad = () => {
-      if (this.isMuted || !this.audioCtx || this.audioCtx.state !== "running") return;
+      if (this.isMuted || this.bgmDisabled || !this.audioCtx || this.audioCtx.state !== "running") return;
       const notes = chords[chordIdx % chords.length];
       chordIdx++;
       notes.forEach((freq, i) => {
@@ -358,6 +383,7 @@ class SoundEngine {
 }
 
 const sound = new SoundEngine();
+window.sound = sound;
 
 /**
  * ============================================================================
@@ -1104,11 +1130,17 @@ window.addEventListener("DOMContentLoaded", () => {
   initPaperPlane();
 
     // Auto-trigger BGM without needing to click the mute button:
-  sound.init();
-  sound.playBGM();
+  const isLastScene = window.nav && window.nav.currentScene === window.nav.totalScenes - 1;
+  if (!isLastScene) {
+    sound.init();
+    sound.playBGM();
+  }
 
   const interactionEvents = ['click', 'pointerdown', 'touchstart', 'touchend', 'keydown', 'scroll', 'wheel'];
   const tryStartAudio = () => {
+    const isCurrentlyLastScene = window.nav && window.nav.currentScene === window.nav.totalScenes - 1;
+    if (isCurrentlyLastScene || sound.bgmDisabled) return;
+
     sound.playBGM();
     if (sound.bgAudio && !sound.bgAudio.paused) {
       interactionEvents.forEach(evt => {

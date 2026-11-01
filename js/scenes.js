@@ -1321,10 +1321,17 @@ window.addEventListener("DOMContentLoaded", () => {
  * ============================================================================
  */
 function onEnterEndPage() {
-  // 1. Turn off background music
-  if (window.sound) {
-    window.sound.stopBGMForEndPage();
+  // 1. Turn off background music completely
+  const snd = window.sound || (typeof sound !== "undefined" ? sound : null);
+  if (snd) {
+    snd.stopBGMForEndPage();
   }
+  document.querySelectorAll("audio").forEach(a => {
+    try {
+      a.pause();
+      a.currentTime = 0;
+    } catch (e) {}
+  });
 
   // 2. Play YouTube video automatically
   playEndPageVideo();
@@ -1335,8 +1342,9 @@ function onLeaveEndPage() {
   pauseEndPageVideo();
 
   // 2. Turn background music back on
-  if (window.sound) {
-    window.sound.enableBGMForOtherScenes();
+  const snd = window.sound || (typeof sound !== "undefined" ? sound : null);
+  if (snd) {
+    snd.enableBGMForOtherScenes();
   }
 }
 
