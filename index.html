@@ -39,6 +39,8 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 </head>
 <body>
+  <!-- Background Music Element -->
+  <audio id="bg-music" src="assets/audio/bg.mp3" loop preload="auto" playsinline></audio>
 
   <!-- Atmospheric Background & Canvas Layers -->
   <div id="ambient-background" aria-hidden="true">
@@ -610,6 +612,30 @@
         <button id="mic-blow-btn" class="btn-secondary" style="font-size: 0.9rem;" aria-label="Use microphone to blow out candles">
           🎙️ Blow with Microphone
         </button>
+        <!-- Special Birthday YouTube Video Showcase -->
+        <div class="youtube-showcase-card glass-card" id="youtube-showcase-card">
+          <div class="youtube-card-header">
+            <span class="yt-badge-tag">🎬 Special Birthday Video for Pihu ✨</span>
+            <button id="yt-play-toggle-btn" class="yt-quick-play-btn" aria-label="Play or pause video">▶️ Play Video</button>
+          </div>
+          <div class="video-responsive-wrap">
+            <iframe
+              id="youtube-endpage-video"
+              src="about:blank"
+              data-src="https://www.youtube.com/embed/K2aJTT29ZdU?autoplay=1&enablejsapi=1&rel=0&playsinline=1"
+              title="Happy Birthday To You Ji - Funny Hindi Birthday Song"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen>
+            </iframe>
+          </div>
+          <div class="yt-card-footer">
+            <span class="yt-caption-text">🎶 Funzoa Hindi Birthday Anthem — Dedicated with smiles! 😄</span>
+            <a href="https://www.youtube.com/watch?v=K2aJTT29ZdU" target="_blank" rel="noopener noreferrer" class="yt-external-btn">Watch on YouTube ↗</a>
+          </div>
+        </div>
+
+
 
         <!-- Grand Finale Celebratory Section -->
         <div id="finale-celebration" class="finale-celebration" aria-live="polite" role="region" aria-label="Birthday celebration">

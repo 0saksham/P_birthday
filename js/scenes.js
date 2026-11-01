@@ -26,6 +26,7 @@ function initScene0() {
 
     tapCount++;
     sound.init();
+    sound.playBGM();
 
     if (tapCount === 1) {
       sound.playPop();
@@ -1219,10 +1220,14 @@ function initScene7() {
     }
   }
 
-  // Action Buttons
+    // Wire YouTube card controls
+  setupYouTubeCardControls();
+
+// Action Buttons
   const replayBtn = document.getElementById("replay-journey-btn");
   if (replayBtn) {
     replayBtn.addEventListener("click", () => {
+      onLeaveEndPage();
       // Full reset
       extinguishedCount = 0;
       finaleFired = false;
@@ -1269,6 +1274,14 @@ window.onSceneEnter = function (sceneIndex) {
     applySkyTimeGradient();
   }
 
+  // Last slide (Scene 7, DOM index 8): manage YouTube autoplay and BGM shutoff
+  const isEndPage = (sceneIndex === 8 || (window.nav && sceneIndex === window.nav.totalScenes - 1));
+  if (isEndPage) {
+    onEnterEndPage();
+  } else {
+    onLeaveEndPage();
+  }
+
   switch (sceneIndex) {
     case 2: initScene2(); break;
     case 3: initScene3(); break;
@@ -1299,3 +1312,93 @@ window.addEventListener("DOMContentLoaded", () => {
   // Scenes 2-8 initialized lazily on first enter via onSceneEnter
 });
 
+
+
+/**
+ * ============================================================================
+ * END PAGE (SCENE 7) VIDEO & AUDIO CONTROLLER
+ * Autoplays YouTube birthday anthem and pauses BGM on the last slide
+ * ============================================================================
+ */
+function onEnterEndPage() {
+  // 1. Turn off background music
+  if (window.sound) {
+    window.sound.stopBGMForEndPage();
+  }
+
+  // 2. Play YouTube video automatically
+  playEndPageVideo();
+}
+
+function onLeaveEndPage() {
+  // 1. Pause and reset YouTube video
+  pauseEndPageVideo();
+
+  // 2. Turn background music back on
+  if (window.sound) {
+    window.sound.enableBGMForOtherScenes();
+  }
+}
+
+function playEndPageVideo() {
+  const iframe = document.getElementById("youtube-endpage-video");
+  const toggleBtn = document.getElementById("yt-play-toggle-btn");
+  if (!iframe) return;
+
+  const targetSrc = iframe.dataset.src || "https://www.youtube.com/embed/K2aJTT29ZdU?autoplay=1&enablejsapi=1&rel=0&playsinline=1";
+  
+  if (!iframe.src || iframe.src === "about:blank" || !iframe.src.includes("K2aJTT29ZdU")) {
+    iframe.src = targetSrc;
+  } else {
+    try {
+      iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+    } catch (e) {}
+  }
+
+  if (toggleBtn) {
+    toggleBtn.textContent = "⏸️ Pause Video";
+    toggleBtn.setAttribute("aria-label", "Pause YouTube video");
+  }
+}
+
+function pauseEndPageVideo() {
+  const iframe = document.getElementById("youtube-endpage-video");
+  const toggleBtn = document.getElementById("yt-play-toggle-btn");
+  if (!iframe) return;
+
+  try {
+    iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+  } catch (e) {}
+
+  iframe.src = "about:blank";
+
+  if (toggleBtn) {
+    toggleBtn.textContent = "▶️ Play Video";
+    toggleBtn.setAttribute("aria-label", "Play YouTube video");
+  }
+}
+
+function setupYouTubeCardControls() {
+  const toggleBtn = document.getElementById("yt-play-toggle-btn");
+  const iframe = document.getElementById("youtube-endpage-video");
+  if (!toggleBtn || !iframe || toggleBtn._hasBound) return;
+  toggleBtn._hasBound = true;
+
+  toggleBtn.addEventListener("click", () => {
+    if (!iframe.src || iframe.src === "about:blank") {
+      playEndPageVideo();
+    } else {
+      if (toggleBtn.textContent.includes("Pause")) {
+        try {
+          iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+        } catch (e) {}
+        toggleBtn.textContent = "▶️ Play Video";
+      } else {
+        try {
+          iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+        } catch (e) {}
+        toggleBtn.textContent = "⏸️ Pause Video";
+      }
+    }
+  });
+}

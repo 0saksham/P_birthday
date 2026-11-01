@@ -109,15 +109,20 @@ class SoundEngine {
     this.isInitialized = false;
     this.bgAudio = null;
     this.ambientInterval = null;
+    this.bgmDisabled = false;
   }
 
   init() {
-    if (this.isInitialized) return;
+    if (this.isInitialized) {
+      if (this.audioCtx && this.audioCtx.state === "suspended") {
+        this.audioCtx.resume().catch(() => {});
+      }
+      return;
+    }
     try {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       if (AudioContext) {
         this.audioCtx = new AudioContext();
-        // Resume suspended context (Chrome autoplay policy fix)
         if (this.audioCtx.state === "suspended") {
           this.audioCtx.resume().catch(() => {});
         }
@@ -129,11 +134,51 @@ class SoundEngine {
     }
   }
 
+  playBGM() {
+    if (this.isMuted || this.bgmDisabled) return;
+    this.init();
+    if (this.audioCtx && this.audioCtx.state === "suspended") {
+      this.audioCtx.resume().catch(() => {});
+    }
+    if (this.bgAudio) {
+      if (this.bgAudio.paused) {
+        const p = this.bgAudio.play();
+        if (p !== undefined) {
+          p.catch(() => {});
+        }
+      }
+    } else {
+      this.initBackgroundMusic();
+    }
+  }
+
+  pauseBGM() {
+    if (this.bgAudio && !this.bgAudio.paused) {
+      this.bgAudio.pause();
+    }
+  }
+
+  stopBGMForEndPage() {
+    this.bgmDisabled = true;
+    this.pauseBGM();
+    if (this.ambientInterval) {
+      clearInterval(this.ambientInterval);
+      this.ambientInterval = null;
+    }
+  }
+
+  enableBGMForOtherScenes() {
+    this.bgmDisabled = false;
+    if (!this.isMuted) {
+      this.playBGM();
+    }
+  }
+
   toggleMute() {
     this.isMuted = !this.isMuted;
     if (this.bgAudio) {
       this.bgAudio.muted = this.isMuted;
-      if (!this.isMuted && this.bgAudio.paused) {
+      if (!this.isMuted && this.bgAudio.paused && !this.bgmDisabled) {
         this.bgAudio.play().catch(() => {});
       }
     }
@@ -155,30 +200,34 @@ class SoundEngine {
 
   initBackgroundMusic() {
     if (this.bgAudio) {
-      // Don't restart if already loaded — just resume
-      if (!this.isMuted && this.bgAudio.paused) {
+      if (!this.isMuted && !this.bgmDisabled && this.bgAudio.paused) {
         this.bgAudio.play().catch(() => {});
       }
       return;
     }
-    const audio = new Audio("assets/audio/bg.mp3");
+    const domAudio = document.getElementById("bg-music");
+    const audio = domAudio || new Audio("assets/audio/bg.mp3");
     audio.loop = true;
     audio.volume = 0.35;
-    this.bgAudio = audio; // assign early so init guard works on next call
+    this.bgAudio = audio;
 
     audio.onerror = () => {
-      // bg.mp3 missing or failed — fall back to procedural
-      this.startProceduralAmbientMusic();
+      if (!this.bgmDisabled) {
+        this.startProceduralAmbientMusic();
+      }
     };
 
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        // Autoplay blocked — will resume on first interaction
-        audio.onerror = () => {
-          this.startProceduralAmbientMusic();
-        };
-      });
+    if (!this.isMuted && !this.bgmDisabled) {
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          audio.onerror = () => {
+            if (!this.bgmDisabled) {
+              this.startProceduralAmbientMusic();
+            }
+          };
+        });
+      }
     }
   }
 
@@ -1054,26 +1103,22 @@ window.addEventListener("DOMContentLoaded", () => {
   checkCakeLock();
   initPaperPlane();
 
-  // Resume audio on first interaction (both click AND touchstart)
-  let audioStarted = false;
-  const startAudioOnFirstInteraction = () => {
-    if (audioStarted) return;
-    audioStarted = true;
-    sound.init();
-    if (sound.bgAudio && !sound.isMuted && sound.bgAudio.paused) {
-      sound.bgAudio.play().catch(() => {});
+    // Auto-trigger BGM without needing to click the mute button:
+  sound.init();
+  sound.playBGM();
+
+  const interactionEvents = ['click', 'pointerdown', 'touchstart', 'touchend', 'keydown', 'scroll', 'wheel'];
+  const tryStartAudio = () => {
+    sound.playBGM();
+    if (sound.bgAudio && !sound.bgAudio.paused) {
+      interactionEvents.forEach(evt => {
+        window.removeEventListener(evt, tryStartAudio, { capture: true, passive: true });
+      });
     }
-    // Resume AudioContext if suspended
-    if (sound.audioCtx && sound.audioCtx.state === "suspended") {
-      sound.audioCtx.resume().catch(() => {});
-    }
-    window.removeEventListener("click", startAudioOnFirstInteraction);
-    window.removeEventListener("touchstart", startAudioOnFirstInteraction);
-    window.removeEventListener("keydown", startAudioOnFirstInteraction);
   };
-  window.addEventListener("click", startAudioOnFirstInteraction);
-  window.addEventListener("touchstart", startAudioOnFirstInteraction, { passive: true });
-  window.addEventListener("keydown", startAudioOnFirstInteraction);
+  interactionEvents.forEach(evt => {
+    window.addEventListener(evt, tryStartAudio, { capture: true, passive: true });
+  });
 
   // Nav buttons
   const nextBtn = document.getElementById("next-scene-btn");
